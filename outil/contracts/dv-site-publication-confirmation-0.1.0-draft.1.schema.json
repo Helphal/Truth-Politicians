@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dv:site-publication-confirmation:0.1.0-draft.1",
+  "title": "Candidate synthetic Site confirmation; not an applied transport receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "event_id",
+    "event_digest",
+    "record_id",
+    "revision",
+    "environment",
+    "destination",
+    "status",
+    "published_at",
+    "public_url",
+    "change_kind",
+    "key_id"
+  ],
+  "properties": {
+    "format": {
+      "const": "dv.site-publication-confirmation/0.1.0-draft.1"
+    },
+    "event_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "event_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "environment": {
+      "const": "test"
+    },
+    "destination": {
+      "const": "dv-site:test"
+    },
+    "status": {
+      "const": "published"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "public_url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "change_kind": {
+      "enum": [
+        "initial",
+        "correction"
+      ]
+    },
+    "key_id": {
+      "type": "string",
+      "pattern": "^test-"
+    }
+  }
+}

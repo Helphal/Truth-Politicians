@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Comprendre comment ça marche{% endblock %}
+{% block content %}
+<header class="page-header">
+  <p class="eyebrow">Pédagogie institutionnelle</p>
+  <h1>Comprendre comment ça marche</h1>
+  <p class="lede">Fiches sourcées et versionnées. Aucun commentaire partisan. Aucun site destinataire n’est modifié par cette consultation.</p>
+</header>
+<ul class="plain-list">
+  {% for entry in entries %}
+  <li>
+    <a href="{% url 'explain_detail' entry.stable_id %}">{{ entry.title }}</a>
+    <span class="muted">{{ entry.get_institution_display }} · v{{ entry.version }}</span>
+    <p>{{ entry.short_text }}</p>
+  </li>
+  {% empty %}
+  <li>Aucune fiche. Exécuter <code>seed_build002</code>.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

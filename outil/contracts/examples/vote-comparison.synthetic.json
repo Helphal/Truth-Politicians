@@ -1,0 +1,59 @@
+{
+  "schema_version": "dv.content/0.4.0-draft.2",
+  "policy_version": "DV-PUB-2",
+  "record_id": "EXAMPLE:VOTE-COMPARISON:1",
+  "record_revision": 1,
+  "content_kind": "vote_comparison",
+  "data_scope": "synthetic",
+  "method_version": "PAIR_EQUAL_KNOWN_V1",
+  "source_versions": [
+    {
+      "source_id": "EXAMPLE:SOURCE:COMPARISON",
+      "version_id": "v1-test",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "public_url": "https://example.invalid/source/comparison"
+    }
+  ],
+  "public": {
+    "title": "Comparaison fictive",
+    "scope": "Une paire synthétique bornée.",
+    "rule_id": "PAIR_EQUAL_KNOWN_V1",
+    "observations": [
+      {
+        "scrutin_id": "EXAMPLE:SCRUTINY:2",
+        "left": "for",
+        "right": "against",
+        "official_text_url": "https://example.invalid/text/2",
+        "official_vote_url": "https://example.invalid/vote/2"
+      }
+    ],
+    "calculation": {
+      "rule_id": "PAIR_EQUAL_KNOWN_V1",
+      "universe": "Paires dont les deux positions sont connues.",
+      "numerator": 0,
+      "denominator": 1,
+      "excluded": 0,
+      "result_state": "known",
+      "fraction": {"numerator": 0, "denominator": 1}
+    },
+    "official_text_url": "https://example.invalid/text/2",
+    "official_vote_url": "https://example.invalid/vote/2",
+    "coverage": {
+      "period_start": "2024-01-03",
+      "period_end": "2024-01-03",
+      "expected_state": "unknown",
+      "expected_count": null,
+      "retrieved_count": 1,
+      "normalized_count": 1,
+      "publishable_count": 1,
+      "exclusions": ["Fixture synthétique, aucune couverture réelle."],
+      "statement": "Exemple de contrat seulement."
+    },
+    "themes": []
+  },
+  "authorization": {
+    "route": "automatic_checked",
+    "snapshot_digest": "f0add04785f7cc94b9c1f59ad295dcfd21e7f58a338c34d31b84af6ea80c74f8",
+    "public_review": {"nature": "controles_automatiques"}
+  }
+}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Connexion{% endblock %}
+{% block content %}
+<section class="narrow">
+  <div class="login-mark" aria-hidden="true">DV</div>
+  <p class="eyebrow">Espace de travail sécurisé</p>
+  <h1>Connexion à l’atelier privé</h1>
+  <p class="lede">Vérifiez les sources, les textes et les votes avant toute décision éditoriale.</p>
+  <p class="notice notice--info">Les comptes techniques et les comptes de revue ont des rôles séparés.</p>
+  {% if throttled %}<p class="message error" role="alert">Trop de tentatives. Réessayez plus tard.</p>{% endif %}
+  {% if account_blocked %}<p class="message error" role="alert">Compte suspendu ou révoqué.</p>{% endif %}
+  {% if form.errors %}<p class="message error" role="alert">Identifiants refusés.</p>{% endif %}
+  <form method="post" autocomplete="on">
+    {% csrf_token %}
+    <label for="id_username">Identifiant (pseudonyme)</label>
+    {{ form.username }}
+    <label for="id_password">Mot de passe</label>
+    {{ form.password }}
+    <button type="submit">Accéder à l’atelier</button>
+  </form>
+  <p class="muted"><a href="{% url 'invite_redeem' %}">Activer une invitation</a></p>
+</section>
+{% endblock %}

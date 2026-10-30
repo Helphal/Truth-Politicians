@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Vue d'ensemble{% endblock %}
+{% block content %}
+<header class="page-header page-header--split">
+  <div><p class="eyebrow">Tableau de bord</p><h1>Ce qui mérite votre attention</h1><p class="lede">Un point d’entrée sobre pour passer des données brutes aux dossiers vérifiables, sans confondre contrôle technique et décision humaine.</p></div>
+  <div class="page-header__meta"><span class="status-pill status-dot status-pill--ok">Atelier privé</span><span class="status-pill">Publication fermée</span></div>
+</header>
+<div class="metric-grid">
+  <article class="metric-card"><span class="metric-label">Sources enregistrées</span><strong class="metric-value">{{ source_count }}</strong><p class="metric-note">Origines et couvertures documentées</p></article>
+  <article class="metric-card"><span class="metric-label">Scrutins normalisés</span><strong class="metric-value">{{ scrutiny_count }}</strong><p class="metric-note">Faits structurés dans l’atelier</p></article>
+  <article class="metric-card"><span class="metric-label">Dossiers constitués</span><strong class="metric-value">{{ dossier_count }}</strong><p class="metric-note">Versions et preuves conservées</p></article>
+  <article class="metric-card metric-card--warning"><span class="metric-label">À examiner</span><strong class="metric-value">{{ pending_count }}</strong><p class="metric-note">Une action humaine peut être requise</p></article>
+</div>
+<div class="action-grid">
+  <a class="action-card" href="{% url 'dossiers' %}"><strong>Examiner les dossiers</strong><span>Voir les preuves, les limites et les versions en attente.</span></a>
+  <a class="action-card" href="{% url 'thematic_comparisons' %}"><strong>Relier parole et votes</strong><span>Partir d’une déclaration ou d’une mesure, puis suivre uniquement les relations qualifiées.</span></a>
+  <a class="action-card" href="{% url 'documentary_search' %}"><strong>Retrouver un passage</strong><span>Explorer le corpus conservé sans fabriquer de conclusion.</span></a>
+</div>
+<section class="notice notice--info">
+  <p class="eyebrow">Règle de confiance</p><h2>La publication reste une frontière explicite</h2>
+  <p>Les faits contrôlés et les comparaisons discours–votes suivent deux circuits distincts. Une comparaison réelle reste bloquée tant que le responsable éditorial n’a pas revu la version et ses preuves exactes.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,56 @@
+{
+  "fixture_only": true,
+  "real_human_review": false,
+  "private_key_persisted": false,
+  "public_keys": {
+    "test-ephemeral-vector": "W4aal9DF7zWlBFbKtqtyfa7FJfgsT9y7BdeXWtzKA1I="
+  },
+  "record": {
+    "record_type": "comparison",
+    "record_id": "SYNTHETIC:ED25519:1",
+    "revision": 1,
+    "sequence": 1,
+    "operation": "upsert",
+    "publication_circuit": "analysis",
+    "is_test": true,
+    "controls": {
+      "source_fidelity": true,
+      "identity": true,
+      "procedure": true,
+      "coverage": true,
+      "public_sources": true,
+      "reuse": true,
+      "privacy": true,
+      "comparability": true,
+      "citations": true,
+      "counterevidence": true
+    },
+    "data": {
+      "slug": "synthetic-ed25519",
+      "title": "FICTIF : é / test   séparation",
+      "declaration_quote": "Exemple fictif, aucune déclaration réelle.",
+      "declaration_date": "2024-01-01",
+      "author_person_external_id": "SYNTHETIC:PERSON:1",
+      "short_answer": "Cas fictif de vérification logicielle.",
+      "main_caveat": "Aucune revue réelle ni publication.",
+      "reasoning": "Vérifier la signature de cette révision fictive.",
+      "result_code": "inconclusive",
+      "method_version": "DV-M0.1",
+      "source_external_ids": [
+        "SYNTHETIC:SRC:1"
+      ],
+      "scrutin_external_ids": [
+        "SYNTHETIC:SCRUTIN:1"
+      ],
+      "reviewed_at": "2026-09-13T00:00:00Z",
+      "public_status": "draft"
+    },
+    "review": {
+      "algorithm": "ed25519",
+      "key_id": "test-ephemeral-vector",
+      "snapshot_sha256": "28e7171ccb798e123baae445c2011c0499823033db565d27c190e3c3d5d92158",
+      "signature": "e2+xWfpfCx0ThHyij2FjX6vEnRtewtt3sIs2hccUrIL0WP/XgD7vp5BvAM0/diOjXPUMXrfylO4hYROMtVEeAA=="
+    }
+  },
+  "canonical_rule": "DV_Security::record_digest; excludes review/sequence; SHA256 ASCII hex signed"
+}

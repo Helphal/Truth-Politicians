@@ -1,0 +1,57 @@
+{
+  "schema_version": "dv.content/0.4.0-draft.2",
+  "policy_version": "DV-PUB-2",
+  "record_id": "EXAMPLE:SPEECH-VOTE:1",
+  "record_revision": 1,
+  "content_kind": "speech_vote",
+  "data_scope": "synthetic",
+  "method_version": "DV-M0.1",
+  "source_versions": [
+    {
+      "source_id": "EXAMPLE:SOURCE:SPEECH",
+      "version_id": "v1-test",
+      "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "public_url": "https://example.invalid/source/speech"
+    }
+  ],
+  "public": {
+    "title": "Comparaison discours-vote fictive",
+    "short_answer": "Proposition synthétique à usage de test.",
+    "main_caveat": "Aucun fait ou acteur réel.",
+    "reasoning": "Les critères sont renseignés pour éprouver le contrat.",
+    "result": "inconclusive",
+    "declaration_quote": "Ceci est une déclaration fictive.",
+    "declaration_date": "2024-01-04",
+    "declaration_date_state": "known",
+    "declaration_source_url": "https://example.invalid/source/speech",
+    "official_text_url": "https://example.invalid/text/3",
+    "official_vote_url": "https://example.invalid/vote/3",
+    "scope": "Fixture sans portée politique.",
+    "counterevidence": [],
+    "coverage": {
+      "period_start": "2024-01-04",
+      "period_end": "2024-01-04",
+      "expected_state": "unknown",
+      "expected_count": null,
+      "retrieved_count": 1,
+      "normalized_count": 1,
+      "publishable_count": 0,
+      "exclusions": ["Fixture synthétique interdite en production."],
+      "statement": "Exemple de contrat seulement."
+    },
+    "method_explanation": {
+      "attribution": "Acteur fictif explicite.",
+      "object": "Objet fictif explicite.",
+      "scope": "Portée fictive explicite.",
+      "chronology": "Chronologie fictive contrôlée.",
+      "procedure": "Procédure fictive contrôlée.",
+      "counterevidence": "Aucun élément réel recherché."
+    },
+    "themes": []
+  },
+  "authorization": {
+    "route": "human_reviewed",
+    "snapshot_digest": "76f9e365a0c0b5c98d0abc3c9c218ba719675565f166a7bb9e056f43a149bcbf",
+    "public_review": {"nature": "revue_humaine", "date": "2024-01-05"}
+  }
+}

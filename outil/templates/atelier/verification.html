@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Vérification documentaire{% endblock %}
+{% block content %}
+<h1>Vérification documentaire</h1>
+<p>Les résultats portent sur une révision et ses sources. Ils ne remplacent pas la revue personnelle du responsable éditorial.</p>
+<p>{% if history %}<a href="?">Revenir aux versions courantes</a> · Historique complet{% else %}Versions courantes · <a href="?history=1">Consulter les anciens examens</a>{% endif %}</p>
+<p>Un examen terminé ne signifie pas que la diffusion est autorisée. Les droits des sources et la revue personnelle sont contrôlés séparément dans chaque dossier.</p>
+<ul>{% for job in page %}<li><a href="{% url 'verification_detail' job.pk %}">{{ job.revision.title }} — révision {{ job.revision.revision }}</a> : {{ job.state_label }}<dl><dt>Exécution/complétude</dt><dd>{{ job.review_axes.execution }}</dd><dt>Résultat documentaire</dt><dd>{{ job.review_axes.documentary }}</dd><dt>Diffusion</dt><dd>{{ job.review_axes.diffusion }}</dd><dt>Architecture des quatre couches</dt><dd>{% if job.architecture_review.available %}{{ job.architecture_review.documentary_label }} — <code>{{ job.architecture_review.documentary_status }}</code>{% else %}{{ job.architecture_review.reason }}{% endif %}</dd></dl></li>{% empty %}<li>Aucune vérification demandée.</li>{% endfor %}</ul>
+<nav aria-label="Pagination des vérifications">{% if page.has_previous %}<a href="?{% if history %}history=1&amp;{% endif %}page={{ page.previous_page_number }}">Précédente</a>{% endif %} {{ page.number }} / {{ page.paginator.num_pages }} {% if page.has_next %}<a href="?{% if history %}history=1&amp;{% endif %}page={{ page.next_page_number }}">Suivante</a>{% endif %}</nav>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load rights_links %}
+{% block title %}Contrôle de {{ job.revision.title }}{% endblock %}
+{% block content %}
+<div class="verification-detail">
+<a href="{% url 'verification_index' %}">Retour à la file</a>
+<h1>{{ job.revision.title }}</h1>
+<p>Révision {{ job.revision.revision }} · {{ job.state_label }}</p>
+<section aria-label="Réponse proposée et réserve"><h2>Réponse proposée</h2><p>{{ job.revision.short_answer|default:"Réponse non renseignée." }}</p><h3>Réserve associée</h3><p>{{ job.revision.main_caveat|default:"Réserve non renseignée ; ne pas en déduire une absence de limite." }}</p><details><summary>Raisonnement de cette révision</summary><p>{{ job.revision.reasoning }}</p></details></section>
+{% include 'atelier/verification_architecture.html' %}
+<section aria-label="Trois axes distincts">
+<h2>État de cette révision</h2>
+<dl><dt>Exécution et complétude</dt><dd>{{ review.axes.execution }}</dd><dt>Résultat documentaire</dt><dd>{{ review.axes.documentary }}</dd><dt>Éligibilité à la diffusion</dt><dd>{{ review.axes.diffusion }}</dd></dl>
+<p>{{ review.human_review }}</p>
+</section>
+<p>Politique du contrôle : {{ job.policy }}. {% if eligibility.0 %}Étayé dans le périmètre vérifié ; droits et revue personnelle restent distincts.{% else %}Ce contrôle ne permet pas de qualifier la version courante. Motif : {{ eligibility.1 }}.{% endif %}</p>
+<p>Une correction, recherche ou suspension encore demandée bloque le soutien complet. Une nuance ou attribution déjà présente conserve son libellé et son extrait exact ci-dessous.</p>
+<p>Empreinte complète : <code>{{ job.fingerprint }}</code></p>
+<p><a href="{% url 'review' job.revision.dossier_id %}">Lire le dossier et ses différences</a></p>
+<h2>Intégrité des pièces</h2>
+{% if checks.passed %}<p>Les pièces et passages correspondent à cette révision. Leur sens est examiné séparément ci-dessous.</p>{% else %}<p>Un contrôle d’intégrité reste à résoudre. Cette révision ne peut pas être qualifiée.</p><ul>{% for error in checks.errors %}<li><code>{{ error }}</code></li>{% endfor %}</ul>{% endif %}
+<h2>Sources et contexte</h2>
+{% for source in sources %}<details><summary>{{ source.reference.source_id }} · {{ source.reference.version_id }}</summary><p>{{ source.state }} · {{ source.captured_at }}</p><h3>Droits par usage</h3><p>{{ source.rights_label }} · {{ source.licence_label }}</p><p>{{ source.rights_assessment|default:"Analyse des usages non documentée." }}</p>{% if source.terms_url %}<p>{{ source.terms_url|qualified_source_link:"Conditions de réutilisation de cette source" }}</p>{% endif %}
+{% for passage in source.passages %}<div id="passage-{{ passage.id }}"><blockquote>{{ passage.exact_text }}</blockquote><p>{{ passage.context }}</p><p>{{ passage.locator }} — {% if passage.public_url %}{{ passage.public_url|qualified_source_link:"Source" }}{% else %}Lien non admissible{% endif %}</p></div>{% empty %}<p>Passage absent : contrôle incomplet.</p>{% endfor %}</details>{% endfor %}
+<h2>Tentatives et résultats</h2>
+{% if review.historical.available %}
+<section aria-labelledby="historical-review"><h3 id="historical-review">Objections du brut historique refusé — tentative {{ review.historical.attempt_id }}</h3>
+<p>{{ review.historical.provenance }}</p><p>{{ review.historical.present_count }} / {{ review.historical.expected_count }} indices sémantiques présents ; <strong>{{ review.historical.missing_count }} indices manquants</strong> ; {{ review.historical.duplicates }} répétitions ; {{ review.historical.invalid_indices }} indices invalides. {{ review.historical.objections|length }} groupes non favorables à instruire. Les qualifications documentaires ci-dessous ne changent pas le verdict brut.</p>
+<details id="historical-raw"><summary>Réponse brute complète refusée et empreinte</summary><p><code>{{ review.historical.raw_sha256 }}</code></p><pre>{{ review.historical.raw_text }}</pre></details>
+{% for objection in review.historical.objections %}<details id="objection-{{ forloop.counter }}"><summary>{{ objection.qualification.label }} — {{ objection.model_group.verdict }} — {{ objection.claims|length }} champs</summary>
+<p>{{ objection.model_group.reason }}</p><p>Action du modèle : {{ objection.model_group.action }}</p><ul>{% for limit in objection.model_group.limits %}<li>{{ limit }}</li>{% endfor %}</ul>
+<h4>Instruction documentaire</h4><p>{{ objection.qualification.rationale }}</p><p>{{ objection.qualification.required_action }}</p><ul>{% for proof in objection.qualification.proofs %}<li>{{ proof }}</li>{% endfor %}</ul>
+<p><a href="#historical-raw">Lire le brut inchangé et son empreinte</a></p>
+<h4>Affirmations et contexte exacts</h4>{% for claim in objection.claims %}<details><summary>{{ claim.location }} : {{ claim.value }}</summary><p>Famille de preuve : {{ claim.evidence_family }}</p><p>{{ claim.context_location }}</p><pre>{{ claim.context }}</pre></details>{% endfor %}
+<h4>Pièces citées, soutien et contre-éléments</h4>{% for proof in objection.source_references %}<p>{{ proof.role }} · source {{ proof.source_version.source_id }} · version {{ proof.source_version.version_id }} · {{ proof.locator }} · <a href="#passage-{{ proof.passage_id }}">Passage {{ proof.passage_id }} et contexte</a></p><blockquote>{{ proof.raw_reference.quote }}</blockquote><p>Littéralité observée : {{ proof.quote_literal }} ; elle ne démontre pas la pertinence de la pièce.</p>{% empty %}<p>Aucune pièce citée dans ce groupe ; consulter l’instruction documentaire.</p>{% endfor %}
+</details>{% endfor %}</section>
+{% else %}<p>Pièces historiques refusées non disponibles dans cette vue : {{ review.historical.reason }}. Leur absence ne vaut pas un contrôle favorable.</p>{% endif %}
+{% for item in review.attempts %}<section><h3>Examen {{ item.attempt.number }} — {{ item.execution }}</h3><p>{{ item.attempt.started_at }}</p>
+<p>{{ item.covered }} / {{ item.expected }} champs canoniques présents ; {{ item.missing|length }} manquants ; {{ item.invalid }} références invalides ; {{ item.duplicates }} répétitions. Ce décompte n’interprète pas un brut fournisseur refusé.</p>
+<details><summary>Provenance du contrôle et limites</summary><p><code>{{ item.attempt.stage }}</code> · <code>{{ item.attempt.provider }}</code> · <code>{{ item.attempt.execution_id }}</code></p><ul>{% for limit in item.attempt.result.limitations %}<li>{{ limit }}</li>{% endfor %}</ul></details>
+{% if item.attempt.error_code %}<p>Refus : {{ item.attempt.error_code }}. Aucun succès documentaire déduit.</p>{% endif %}
+<details id="resultat-{{ item.attempt.pk }}"><summary>Résultat persisté et explication de sa portée</summary><p>{{ item.raw_note }}</p><pre>{{ item.raw_json }}</pre></details>
+{% for group in item.groups %}<details><summary>{{ group.context_path }} — {{ group.verdict }} — {{ group.claims|length }} champs</summary><h4>Contexte complet de l’objet</h4><pre>{{ group.context }}</pre>
+{% for claim in group.claims %}<article id="{{ claim.anchor }}"><h4>{{ claim.location }}</h4><p>{{ claim.value }}</p><p><strong>{{ claim.verdict }}</strong> — {{ claim.reason }}</p><p>Action : {{ claim.action }}</p><p><a href="#resultat-{{ item.attempt.pk }}">Résultat et provenance</a></p>{% if claim.action_resolution %}<p>Déjà présent dans cette version : {{ claim.action_resolution.reason }}</p><blockquote>{{ claim.action_resolution.quote }}</blockquote>{% endif %}<ul>{% for limit in claim.limits %}<li>{{ limit }}</li>{% endfor %}</ul>{% for proof in claim.proofs %}<p>{{ proof.kind }} · <a href="#{{ proof.anchor }}">Passage {{ proof.passage_id }} et contexte source</a></p><blockquote>{{ proof.quote }}</blockquote>{% empty %}<p>Aucune pièce citée pour ce champ.</p>{% endfor %}</article>{% endfor %}</details>{% empty %}<p>Aucun jugement canonique persisté ; le refus ne permet pas de déduire un avis favorable.</p>{% endfor %}
+{% if item.missing %}<details><summary>{{ item.missing|length }} champs sans jugement canonique — détail complet</summary><ul>{% for claim in item.missing %}<li>{{ claim.location }} : {{ claim.value }}</li>{% endfor %}</ul></details>{% endif %}
+</section>{% empty %}<p>Examen sémantique non exécuté.</p>{% endfor %}
+<details><summary>Champs couverts par l’examen</summary><ul>{% for claim in claims %}<li>{{ claim.location }} : {{ claim.value }}</li>{% endfor %}</ul></details>
+</div>
+{% endblock %}

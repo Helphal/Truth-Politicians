@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load dv_accounts %}
+{% block title %}Qualifier les relations{% endblock %}
+{% block content %}
+<header class="page-header page-header--split">
+  <div><a class="back-link" href="{% url 'thematic_comparisons' %}">← Retour au comparateur</a><p class="eyebrow">Qualification documentaire</p><h1>Établir les deux maillons</h1><p class="lede">Chaque décision crée une révision immuable. Elle prépare le calcul local, mais ne vaut ni approbation éditoriale du responsable éditorial, ni autorisation de publication.</p></div>
+  <div class="page-header__meta"><span class="status-pill status-pill--warning">Action tracée</span><span class="status-pill">Publication fermée</span></div>
+</header>
+
+<section class="notice notice--info"><h2>Avant d’enregistrer</h2><p>La première relation établit qu’une parole vise bien l’effet concret d’une mesure. La seconde établit ce qu’un vote « pour » fait à cette mesure. Une simple ressemblance de mots ne suffit pas : choisissez le passage exact et décrivez le raisonnement vérifiable.</p></section>
+
+<div class="qualification-grid">
+  <section class="qualification-panel qualification-panel--speech">
+    <p class="eyebrow">Maillon 1</p><h2>Parole → mesure</h2><p>Qualifier le sens d’une déclaration à l’égard d’un effet concret.</p>
+    <form method="post">{% csrf_token %}<input type="hidden" name="kind" value="position">
+      {% for field in position_form %}<div class="field-group">{{ field.label_tag }}{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}<span class="field-error" role="alert">{{ error }}</span>{% endfor %}</div>{% endfor %}
+      {% for error in position_form.non_field_errors %}<p class="field-error" role="alert">{{ error }}</p>{% endfor %}
+      <button type="submit">Enregistrer la révision parole → mesure</button>
+    </form>
+  </section>
+  <section class="qualification-panel qualification-panel--vote">
+    <p class="eyebrow">Maillon 2</p><h2>Mesure → scrutin</h2><p>Qualifier l’effet procédural exact d’un vote « pour ».</p>
+    <form method="post">{% csrf_token %}<input type="hidden" name="kind" value="vote">
+      {% for field in vote_form %}<div class="field-group">{{ field.label_tag }}{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}<span class="field-error" role="alert">{{ error }}</span>{% endfor %}</div>{% endfor %}
+      {% for error in vote_form.non_field_errors %}<p class="field-error" role="alert">{{ error }}</p>{% endfor %}
+      <button type="submit">Enregistrer la révision mesure → scrutin</button>
+    </form>
+  </section>
+</div>
+
+<section><div class="section-heading"><div><p class="eyebrow">Traçabilité</p><h2>Dernières révisions enregistrées</h2></div><span class="status-pill">Immuables</span></div>
+  <div class="history-columns">
+    <div><h3>Parole → mesure</h3><ul class="history-list">{% for item in position_history %}<li><strong>{{ item.declaration.speaker_label }}</strong><span>{{ item.measure.title }} · R{{ item.revision }} · {{ item.get_qualification_status_display }} · {{ item.get_stance_display }}</span><small>{% if item.recorded_by %}Saisi par {{ item.recorded_by|dv_attribution }}{% else %}Import antérieur non attribué{% endif %}</small></li>{% empty %}<li>Aucune relation enregistrée.</li>{% endfor %}</ul></div>
+    <div><h3>Mesure → scrutin</h3><ul class="history-list">{% for item in vote_history %}<li><strong>{{ item.measure.title }}</strong><span>{{ item.scrutiny.occurred_on|date:"j F Y" }} · R{{ item.revision }} · {{ item.get_qualification_status_display }} · {{ item.get_vote_effect_display }}</span><small>{% if item.recorded_by %}Saisi par {{ item.recorded_by|dv_attribution }}{% else %}Import antérieur non attribué{% endif %}</small></li>{% empty %}<li>Aucune relation enregistrée.</li>{% endfor %}</ul></div>
+  </div>
+</section>
+{% endblock %}

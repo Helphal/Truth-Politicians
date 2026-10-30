@@ -1,0 +1,3 @@
+# Optional MariaDB qualification; exact base pins and connector, no global upgrade.
+-r requirements.lock
+mysqlclient==2.3.0

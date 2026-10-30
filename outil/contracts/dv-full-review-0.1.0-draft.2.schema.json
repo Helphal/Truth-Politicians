@@ -1,0 +1,1670 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:truth-politicians:full-review:0.1.0-draft.2",
+  "title": "Contenu intégral candidat à revue personnelle, sans preuve ni autorisation implicite",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "record_id",
+    "record_revision",
+    "environment",
+    "destination",
+    "content_kind",
+    "data_scope",
+    "snapshot_digest",
+    "public",
+    "source_versions",
+    "method_version",
+    "indicator_candidate"
+  ],
+  "properties": {
+    "format": {
+      "const": "dv.full-review/0.1.0-draft.2"
+    },
+    "record_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "record_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "environment": {
+      "enum": [
+        "test",
+        "private",
+        "production"
+      ]
+    },
+    "destination": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "content_kind": {
+      "const": "speech_vote"
+    },
+    "data_scope": {
+      "enum": [
+        "synthetic",
+        "real"
+      ]
+    },
+    "snapshot_digest": {
+      "$ref": "#/$defs/sha256"
+    },
+    "public": {
+      "$ref": "#/$defs/speechVote"
+    },
+    "source_versions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "items": {
+        "$ref": "#/$defs/sourceVersion"
+      }
+    },
+    "method_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "indicator_candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "actor_id",
+        "actor_type",
+        "declaration_id",
+        "act_id",
+        "institution",
+        "period_start",
+        "period_end",
+        "source_revision",
+        "qualification",
+        "vote_category",
+        "identity_resolved",
+        "nominative_available",
+        "admissible",
+        "zero_evidence",
+        "repetition_key",
+        "sources",
+        "method_version",
+        "method_status",
+        "value",
+        "zero_subtype",
+        "exclusion_reason"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string"
+        },
+        "actor_id": {
+          "type": "string"
+        },
+        "actor_type": {
+          "type": "string"
+        },
+        "declaration_id": {
+          "type": "string"
+        },
+        "act_id": {
+          "type": "string"
+        },
+        "institution": {
+          "type": "string"
+        },
+        "period_start": {
+          "type": "string"
+        },
+        "period_end": {
+          "type": "string"
+        },
+        "source_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "qualification": {
+          "type": "string"
+        },
+        "vote_category": {
+          "type": "string"
+        },
+        "identity_resolved": {
+          "type": "boolean"
+        },
+        "nominative_available": {
+          "type": "boolean"
+        },
+        "admissible": {
+          "type": "boolean"
+        },
+        "zero_evidence": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "repetition_key": {
+          "type": "string"
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object"
+          }
+        },
+        "method_version": {
+          "const": "DV-INDICATOR-UNWEIGHTED-CANDIDATE-1"
+        },
+        "method_status": {
+          "const": "candidate_not_approved"
+        },
+        "value": {
+          "enum": [
+            null,
+            -1,
+            0,
+            1
+          ]
+        },
+        "zero_subtype": {
+          "enum": [
+            null,
+            "abstention",
+            "non_participation"
+          ]
+        },
+        "exclusion_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 220,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "httpsUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "dataState": {
+      "enum": [
+        "known",
+        "unknown",
+        "unavailable",
+        "not_applicable"
+      ]
+    },
+    "statefulCount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "value"
+      ],
+      "properties": {
+        "state": {
+          "$ref": "#/$defs/dataState"
+        },
+        "value": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "known"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          }
+        }
+      ]
+    },
+    "sourceVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "version_id",
+        "sha256",
+        "public_url"
+      ],
+      "properties": {
+        "source_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "public_url": {
+          "$ref": "#/$defs/httpsUrl"
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "period_start",
+        "period_end",
+        "expected_state",
+        "expected_count",
+        "retrieved_count",
+        "normalized_count",
+        "publishable_count",
+        "exclusions"
+      ],
+      "properties": {
+        "period_start": {
+          "type": "string",
+          "format": "date"
+        },
+        "period_end": {
+          "type": "string",
+          "format": "date"
+        },
+        "expected_state": {
+          "$ref": "#/$defs/dataState"
+        },
+        "expected_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "retrieved_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "normalized_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "publishable_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exclusions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "expected_state": {
+                "const": "known"
+              }
+            },
+            "required": [
+              "expected_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "expected_count": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "themeRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "target_type",
+        "target_id",
+        "origin"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_type": {
+          "enum": [
+            "dossier",
+            "text",
+            "measure"
+          ]
+        },
+        "target_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "origin": {
+          "enum": [
+            "official",
+            "rule",
+            "proposed"
+          ]
+        },
+        "locator": {
+          "type": "string"
+        }
+      }
+    },
+    "officialReferencePair": {
+      "type": "object",
+      "required": [
+        "official_text_url",
+        "official_vote_url"
+      ],
+      "properties": {
+        "official_text_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "official_vote_url": {
+          "$ref": "#/$defs/httpsUrl"
+        }
+      }
+    },
+    "voteCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registered",
+        "voters",
+        "expressed",
+        "for",
+        "against",
+        "abstention"
+      ],
+      "properties": {
+        "registered": {
+          "$ref": "#/$defs/statefulCount"
+        },
+        "voters": {
+          "$ref": "#/$defs/statefulCount"
+        },
+        "expressed": {
+          "$ref": "#/$defs/statefulCount"
+        },
+        "for": {
+          "$ref": "#/$defs/statefulCount"
+        },
+        "against": {
+          "$ref": "#/$defs/statefulCount"
+        },
+        "abstention": {
+          "$ref": "#/$defs/statefulCount"
+        }
+      }
+    },
+    "officialVote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "institution",
+        "legislature",
+        "official_title",
+        "scrutin_id",
+        "occurred_on",
+        "date_precision",
+        "procedure",
+        "stage",
+        "result_status",
+        "official_text_url",
+        "official_vote_url",
+        "text_reference_role",
+        "nominative_status",
+        "counts",
+        "coverage",
+        "themes"
+      ],
+      "properties": {
+        "institution": {
+          "type": "string",
+          "minLength": 1
+        },
+        "legislature": {
+          "type": "string",
+          "minLength": 1
+        },
+        "session": {
+          "type": "string"
+        },
+        "official_title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scrutin_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "occurred_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "date_precision": {
+          "enum": [
+            "day",
+            "minute",
+            "unknown"
+          ]
+        },
+        "procedure": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stage": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result_status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "official_text_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "official_vote_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "text_reference_role": {
+          "enum": [
+            "submitted",
+            "result_only",
+            "unresolved"
+          ]
+        },
+        "nominative_status": {
+          "enum": [
+            "available",
+            "partial",
+            "not_available"
+          ]
+        },
+        "counts": {
+          "$ref": "#/$defs/voteCounts"
+        },
+        "coverage": {
+          "$ref": "#/$defs/coverage"
+        },
+        "themes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/themeRef"
+          }
+        },
+        "catalogue": {
+          "$ref": "#/$defs/catalogue"
+        }
+      }
+    },
+    "votePosition": {
+      "enum": [
+        "for",
+        "against",
+        "abstention",
+        "non_voting",
+        "not_recorded",
+        "unknown"
+      ]
+    },
+    "comparisonObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scrutin_id",
+        "left",
+        "right",
+        "official_text_url",
+        "official_vote_url"
+      ],
+      "properties": {
+        "scrutin_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "left": {
+          "$ref": "#/$defs/votePosition"
+        },
+        "right": {
+          "$ref": "#/$defs/votePosition"
+        },
+        "official_text_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "official_vote_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "left_person_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "left_basis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "category"
+          ],
+          "properties": {
+            "kind": {
+              "const": "reference_category"
+            },
+            "category": {
+              "$ref": "#/$defs/votePosition"
+            }
+          }
+        },
+        "right_person_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "right_basis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "category"
+          ],
+          "properties": {
+            "kind": {
+              "const": "reference_category"
+            },
+            "category": {
+              "$ref": "#/$defs/votePosition"
+            }
+          }
+        }
+      }
+    },
+    "calculation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "universe",
+        "numerator",
+        "denominator",
+        "excluded",
+        "result_state"
+      ],
+      "properties": {
+        "rule_id": {
+          "const": "PAIR_EQUAL_KNOWN_V1"
+        },
+        "universe": {
+          "type": "string",
+          "minLength": 1
+        },
+        "numerator": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "denominator": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excluded": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "result_state": {
+          "enum": [
+            "known",
+            "not_calculable"
+          ]
+        },
+        "fraction": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "numerator",
+                "denominator"
+              ],
+              "properties": {
+                "numerator": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "denominator": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "voteComparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "scope",
+        "rule_id",
+        "observations",
+        "calculation",
+        "official_text_url",
+        "official_vote_url",
+        "coverage",
+        "themes"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rule_id": {
+          "const": "PAIR_EQUAL_KNOWN_V1"
+        },
+        "observations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/comparisonObservation"
+          }
+        },
+        "calculation": {
+          "$ref": "#/$defs/calculation"
+        },
+        "official_text_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "official_vote_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "coverage": {
+          "$ref": "#/$defs/coverage"
+        },
+        "themes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/themeRef"
+          }
+        },
+        "catalogue": {
+          "$ref": "#/$defs/catalogue"
+        }
+      }
+    },
+    "methodExplanation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attribution",
+        "object",
+        "scope",
+        "chronology",
+        "procedure",
+        "counterevidence"
+      ],
+      "properties": {
+        "attribution": {
+          "type": "string",
+          "minLength": 1
+        },
+        "object": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chronology": {
+          "type": "string",
+          "minLength": 1
+        },
+        "procedure": {
+          "type": "string",
+          "minLength": 1
+        },
+        "counterevidence": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "counterevidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "statement",
+        "source_url",
+        "effect"
+      ],
+      "properties": {
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "effect": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "speechVote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "short_answer",
+        "main_caveat",
+        "reasoning",
+        "result",
+        "declaration_quote",
+        "declaration_date",
+        "declaration_date_state",
+        "declaration_source_url",
+        "official_text_url",
+        "official_vote_url",
+        "scope",
+        "counterevidence",
+        "coverage",
+        "method_explanation",
+        "themes"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "short_answer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "main_caveat": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reasoning": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result": {
+          "enum": [
+            "convergence",
+            "divergence",
+            "evolution",
+            "mixed",
+            "not_comparable",
+            "inconclusive"
+          ]
+        },
+        "declaration_quote": {
+          "type": "string",
+          "minLength": 1
+        },
+        "declaration_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "declaration_date_state": {
+          "$ref": "#/$defs/dataState"
+        },
+        "declaration_source_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "official_text_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "official_vote_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "counterevidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/counterevidence"
+          }
+        },
+        "coverage": {
+          "$ref": "#/$defs/coverage"
+        },
+        "method_explanation": {
+          "$ref": "#/$defs/methodExplanation"
+        },
+        "themes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/themeRef"
+          }
+        },
+        "catalogue": {
+          "$ref": "#/$defs/catalogue"
+        },
+        "acts": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 25,
+          "items": {
+            "$ref": "#/$defs/comparisonAct"
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/evidenceItem"
+          }
+        },
+        "attribution": {
+          "$ref": "#/$defs/attribution"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "declaration_date_state": {
+                "const": "known"
+              }
+            },
+            "required": [
+              "declaration_date_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "declaration_date": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "declaration_date": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "publicAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route",
+        "snapshot_digest",
+        "public_review"
+      ],
+      "properties": {
+        "route": {
+          "enum": [
+            "automatic_checked",
+            "human_reviewed"
+          ]
+        },
+        "snapshot_digest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "public_review": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "nature"
+          ],
+          "properties": {
+            "nature": {
+              "enum": [
+                "controles_automatiques",
+                "revue_humaine"
+              ]
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "route": {
+                "const": "human_reviewed"
+              }
+            },
+            "required": [
+              "route"
+            ]
+          },
+          "then": {
+            "properties": {
+              "public_review": {
+                "properties": {
+                  "nature": {
+                    "const": "revue_humaine"
+                  }
+                },
+                "required": [
+                  "nature",
+                  "date"
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "public_review": {
+                "properties": {
+                  "nature": {
+                    "const": "controles_automatiques"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "display_name",
+        "institutional_ids",
+        "identity_status"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "institutional_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "identity_status": {
+          "enum": [
+            "resolved",
+            "unresolved",
+            "conflict"
+          ]
+        }
+      }
+    },
+    "organization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "kind"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "party",
+            "parliamentary_group",
+            "coalition",
+            "institution"
+          ]
+        },
+        "valid_from": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "valid_to": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        }
+      }
+    },
+    "affiliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "person_id",
+        "organization_id",
+        "status",
+        "starts_on",
+        "observed_on",
+        "source_version"
+      ],
+      "properties": {
+        "person_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "organization_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "starts_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "ends_on": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "observed_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "source_version": {
+          "$ref": "#/$defs/sourceVersion"
+        },
+        "ambiguity": {
+          "type": "string"
+        }
+      }
+    },
+    "textVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "dossier_id",
+        "kind",
+        "version_label",
+        "stage",
+        "relation",
+        "official_url",
+        "official_title",
+        "source_version"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "dossier_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stage": {
+          "type": "string",
+          "minLength": 1
+        },
+        "relation": {
+          "enum": [
+            "submitted",
+            "adopted",
+            "in_force",
+            "other"
+          ]
+        },
+        "occurred_on": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "official_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "official_title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_version": {
+          "$ref": "#/$defs/sourceVersion"
+        }
+      }
+    },
+    "voteObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scrutiny_id",
+        "person_id",
+        "source_category",
+        "normalized_category",
+        "mapping_rule",
+        "source_version"
+      ],
+      "properties": {
+        "scrutiny_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "person_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "mandate_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "affiliation_at_event_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "normalized_category": {
+          "$ref": "#/$defs/votePosition"
+        },
+        "mapping_rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_version": {
+          "$ref": "#/$defs/sourceVersion"
+        }
+      }
+    },
+    "mandate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "person_id",
+        "institution",
+        "mandate_type",
+        "territory",
+        "starts_on",
+        "ends_on",
+        "source_version"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "person_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "institution": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mandate_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "territory": {
+          "type": "string"
+        },
+        "starts_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "ends_on": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "source_version": {
+          "$ref": "#/$defs/sourceVersion"
+        }
+      }
+    },
+    "legislativeDossier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "institution",
+        "official_title",
+        "official_url",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "institution": {
+          "type": "string",
+          "minLength": 1
+        },
+        "official_title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "official_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "scrutinySnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "institution",
+        "legislature",
+        "official_title",
+        "scrutin_id",
+        "occurred_on",
+        "date_precision",
+        "procedure",
+        "stage",
+        "result_status",
+        "official_text_url",
+        "official_vote_url",
+        "text_reference_role",
+        "nominative_status",
+        "counts",
+        "source_version"
+      ],
+      "properties": {
+        "institution": {
+          "type": "string",
+          "minLength": 1
+        },
+        "legislature": {
+          "type": "string",
+          "minLength": 1
+        },
+        "session": {
+          "type": "string"
+        },
+        "official_title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scrutin_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "occurred_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "date_precision": {
+          "enum": [
+            "day",
+            "minute",
+            "unknown"
+          ]
+        },
+        "procedure": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stage": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result_status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "official_text_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "official_vote_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "text_reference_role": {
+          "enum": [
+            "submitted",
+            "result_only",
+            "unresolved"
+          ]
+        },
+        "nominative_status": {
+          "enum": [
+            "available",
+            "partial",
+            "not_available"
+          ]
+        },
+        "counts": {
+          "$ref": "#/$defs/voteCounts"
+        },
+        "source_version": {
+          "$ref": "#/$defs/sourceVersion"
+        }
+      }
+    },
+    "catalogue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_scrutiny_ids",
+        "persons",
+        "organizations",
+        "affiliations",
+        "mandates",
+        "text_versions",
+        "legislative_dossiers",
+        "scrutinies",
+        "vote_observations",
+        "pagination",
+        "exclusions"
+      ],
+      "properties": {
+        "scope_scrutiny_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 25,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "persons": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "$ref": "#/$defs/person"
+          }
+        },
+        "organizations": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "$ref": "#/$defs/organization"
+          }
+        },
+        "affiliations": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "$ref": "#/$defs/affiliation"
+          }
+        },
+        "mandates": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "$ref": "#/$defs/mandate"
+          }
+        },
+        "text_versions": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "$ref": "#/$defs/textVersion"
+          }
+        },
+        "legislative_dossiers": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "$ref": "#/$defs/legislativeDossier"
+          }
+        },
+        "scrutinies": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "$ref": "#/$defs/scrutinySnapshot"
+          }
+        },
+        "vote_observations": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "$ref": "#/$defs/voteObservation"
+          }
+        },
+        "pagination": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "limit",
+            "offset",
+            "returned_count",
+            "total_count_in_materialized_scope",
+            "complete_for_materialized_scope"
+          ],
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 250
+            },
+            "offset": {
+              "const": 0
+            },
+            "returned_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "total_count_in_materialized_scope": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "complete_for_materialized_scope": {
+              "const": true
+            }
+          }
+        },
+        "exclusions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "comparisonAct": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scrutiny_id",
+        "included",
+        "reason",
+        "chronological_relation",
+        "occurred_on",
+        "official_title",
+        "official_text_url",
+        "official_vote_url",
+        "source_version"
+      ],
+      "properties": {
+        "scrutiny_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "included": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chronological_relation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "occurred_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "official_title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "official_text_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "official_vote_url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "source_version": {
+          "$ref": "#/$defs/sourceVersion"
+        }
+      }
+    },
+    "evidenceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_version",
+        "locator",
+        "exact_quote",
+        "transcription_status"
+      ],
+      "properties": {
+        "source_version": {
+          "$ref": "#/$defs/sourceVersion"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exact_quote": {
+          "type": "string"
+        },
+        "transcription_status": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "attribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "person_id",
+        "organization_id",
+        "speaker_label",
+        "capacity"
+      ],
+      "properties": {
+        "person_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "organization_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "speaker_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capacity": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

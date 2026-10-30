@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Alimentation permanente{% endblock %}
+{% block content %}
+<header class="page-header">
+  <p class="eyebrow">FEEDS-01</p>
+  <h1>Matrice d’alimentation</h1>
+  <p class="lede">Fraîcheur, cadence, blocages exacts. Aucune métrique politique.</p>
+</header>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Flux</th><th>Autorité</th><th>Famille</th><th>Mécanisme</th><th>Cadence</th>
+      <th>Actif</th><th>Dernier succès</th><th>Blocage</th><th>Couverture</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in rows %}
+    <tr>
+      <td><code>{{ row.feed_id }}</code></td>
+      <td>{{ row.authority }}</td>
+      <td>{{ row.family }}</td>
+      <td>{{ row.mechanism }}</td>
+      <td>{{ row.cadence }}</td>
+      <td>{{ row.ingestion_active }}</td>
+      <td>{{ row.last_success_at|default:"—" }}</td>
+      <td>{{ row.block_reason|default:"—" }}</td>
+      <td>{{ row.coverage }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="9">Catalogue vide.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load review_labels rights_links %}
+{% block title %}Revue {{ dossier.stable_id }}{% endblock %}
+{% block content %}
+<header class="review-header">
+  <p><a href="{% url 'verification_index' %}">File de vérification documentaire</a></p>
+  <a class="back-link" href="{% url 'dossiers' %}">← Retour aux dossiers</a>
+  <p class="eyebrow">Revue documentaire</p>
+  <h1 class="review-title">{% if revision.public_payload.title %}{{ revision.public_payload.title }}{% elif revision.public_payload.official_title %}{{ revision.public_payload.official_title }}{% else %}Revue d’une version{% endif %}</h1>
+  <p class="lede">Vérifiez d’abord la conclusion proposée, puis remontez vers les actes, les sources et les limites avant de décider.</p>
+  <div class="review-meta"><span class="status-pill">Révision {{ revision.revision }}</span>{% if dossier.data_scope == 'real' %}<span class="status-pill status-pill--real">Dossier réel</span>{% else %}<span class="status-pill">Fixture TEST</span>{% endif %}<span class="status-pill">{{ dossier.get_state_display }}</span></div>
+</header>
+<form method="post" action="{% url 'verification_request' revision.pk %}">{% csrf_token %}<button type="submit">Demander ou reprendre la vérification de cette révision</button></form>
+{% if revision.indicator_contribution %}<section><h2>Contribution proposée à l'indicateur — méthode non approuvée</h2><p>Cette donnée substantielle est incluse dans la signature détachée complète ; une revue antérieure ne la couvre pas.</p><dl>{% for key,value in revision.indicator_contribution.payload.items %}<dt>{{ key }}</dt><dd>{{ value|default_if_none:"indisponible" }}</dd>{% endfor %}</dl></section>{% endif %}
+{% if dossier.data_scope == 'synthetic' %}<p><a href="{% url 'detached_review' dossier.pk %}">Essayer la signature détachée — identité fictive uniquement</a></p>{% endif %}
+<p><code>{{ dossier.stable_id }}</code> · empreinte <code class="digest" title="{{ revision.snapshot_digest }}">{{ revision.snapshot_digest }}</code></p>
+{% if dossier.data_scope == 'real' %}<p class="notice notice--danger"><strong>Aucune revue humaine enregistrée.</strong> Cette page n’atteste rien au nom du responsable éditorial tant qu’il n’a pas lui-même soumis l’action sur cette version.</p>{% endif %}
+
+{% if preparation %}<section class="notice notice--info"><p class="eyebrow">Traçabilité</p><h2>Préparation et provenance du fournisseur d’analyse</h2>
+  <p>État : <strong>{{ preparation.payload.state }}</strong>. {{ preparation.payload.blocking_reason }}</p>
+  <p>Préparation <code>{{ preparation.preparation_digest }}</code> · entrée courante <code>{{ preparation.payload.candidate_input_digest|default:"non consignée" }}</code>.</p>
+  {% if preparation.payload.analysis_provider_execution.current_candidate_analyzed is False %}<p><strong>Attention :</strong> la proposition antérieure n’est qu’un brouillon réassocié ; aucune nouvelle inférence n’a réussi sur cette entrée.</p>{% elif preparation.payload.analysis_provider_execution.current_candidate_analyzed is not True %}<p><strong>Provenance à vérifier :</strong> cette préparation n’atteste pas qu’une analyse a réussi sur l’entrée courante.</p>{% endif %}
+  {% if preparation.payload.fact_qualification_digest %}<p>Qualification factuelle : <code>{{ preparation.payload.fact_qualification_digest }}</code>.</p>{% endif %}
+</section>{% endif %}
+
+<section class="preview hero-card" aria-labelledby="aperçu"><p class="eyebrow">À lire en premier</p><h2 id="aperçu">Ce que cette version affirme</h2>
+  <p class="table-subtitle">Contenu figé soumis à revue. Votre décision porte uniquement sur la révision affichée ; une modification demandera une nouvelle revue.</p>
+  <h3>{% if revision.public_payload.title %}{{ revision.public_payload.title }}{% else %}{{ revision.public_payload.official_title }}{% endif %}</h3>
+  {% if revision.public_payload.short_answer %}<p class="answer">{{ revision.public_payload.short_answer }}</p>{% endif %}
+  {% if revision.public_payload.main_caveat %}<p class="caveat"><strong>Réserve :</strong> {{ revision.public_payload.main_caveat }}</p>{% endif %}
+  {% if revision.public_payload.reasoning %}<p>{{ revision.public_payload.reasoning }}</p>{% endif %}
+  {% if revision.public_payload.result %}<p><strong>Résultat proposé :</strong> {{ revision.public_payload.result|review_label }}</p>{% endif %}
+  {% if revision.public_payload.result_status %}<p><strong>Issue officielle :</strong> {{ revision.public_payload.result_status }}</p>{% endif %}
+  {% if revision.public_payload.calculation %}<h4>Calcul factuel figé</h4><p>{% if revision.public_payload.calculation.result_state == 'known' %}{{ revision.public_payload.calculation.numerator }} position(s) concordante(s) sur {{ revision.public_payload.calculation.denominator }} paire(s) comparable(s).{% else %}Résultat non calculable.{% endif %} {{ revision.public_payload.calculation.excluded }} paire(s) exclue(s).</p><p>Univers : {{ revision.public_payload.calculation.universe }}. Règle : {{ revision.public_payload.calculation.rule_id }}.</p>{% endif %}
+  {% if revision.public_payload.counts %}<dl>{% for category, count in revision.public_payload.counts.items %}<dt>{{ category|review_label }}</dt><dd>{{ count.state|review_label }} : {{ count.value|default_if_none:"non établi" }} {{ count.reason }}</dd>{% endfor %}</dl>{% endif %}
+  {% if revision.public_payload.declaration_quote %}<blockquote>{{ revision.public_payload.declaration_quote }}</blockquote>{% endif %}
+  <div class="official-links">{{ revision.public_payload.official_text_url|qualified_source_link:"Lire le texte officiel" }}{{ revision.public_payload.official_vote_url|qualified_source_link:"Vérifier le vote officiel" }}</div>
+</section>
+
+{% if revision.public_payload.declaration_date or revision.public_payload.declaration_quote %}
+<section><h2>Déclaration et passage</h2>
+  {% if revision.public_payload.declaration_date %}<p>Date des propos : {{ revision.public_payload.declaration_date }} ({{ revision.public_payload.declaration_date_state }})</p>{% endif %}
+  {% if revision.public_payload.declaration_quote %}<blockquote>{{ revision.public_payload.declaration_quote }}</blockquote>{% endif %}
+  {% if revision.public_payload.declaration_source_url %}<p>{{ revision.public_payload.declaration_source_url|qualified_source_link:"Ouvrir la source de la déclaration" }}</p>{% endif %}
+</section>
+{% endif %}
+
+{% if revision.public_payload.acts %}
+<section><h2>Actes retenus ou écartés</h2><ul>
+  {% for act in revision.public_payload.acts %}<li><strong>{{ act.occurred_on }} — {{ act.official_title }}</strong><br>{% if act.included %}Retenu{% else %}Écarté{% endif %} : {{ act.reason }} ({{ act.chronological_relation }})<br>{{ act.official_text_url|qualified_source_link:"Texte/version" }} · {{ act.official_vote_url|qualified_source_link:"Scrutin" }}</li>{% empty %}<li>Aucun acte rattaché.</li>{% endfor %}
+</ul></section>
+{% elif revision.public_payload.observations %}
+<section><h2>Votes retenus</h2><ul>{% for observation in revision.public_payload.observations %}<li><code>{{ observation.scrutin_id }}</code> : {{ observation.left|review_label }} / {{ observation.right|review_label }}<br>Côté gauche : {{ observation.left_person_id|default:"base de référence" }} ; côté droit : {% if observation.right_person_id %}{{ observation.right_person_id }}{% else %}catégorie de référence {{ observation.right_basis.category|review_label }}{% endif %} — {{ observation.official_text_url|qualified_source_link:"texte" }} · {{ observation.official_vote_url|qualified_source_link:"scrutin" }}</li>{% endfor %}</ul></section>
+{% endif %}
+
+<div class="columns">
+<section><h2>Méthode et motif</h2><p>{{ revision.public_payload.scope }}</p><dl>{% for criterion, explanation in revision.public_payload.method_explanation.items %}<dt>{{ criterion }}</dt><dd>{{ explanation }}</dd>{% empty %}<dt>Règle</dt><dd>{{ revision.public_payload.rule_id|default:"Contrôles factuels" }}</dd>{% endfor %}</dl></section>
+<section><h2>Contre-éléments</h2><ul>{% for item in revision.public_payload.counterevidence %}<li>{{ item.statement }} — {{ item.effect }}{% if item.source_url %}<br>{{ item.source_url|qualified_source_link:"Preuve" }}{% endif %}</li>{% empty %}<li>Aucun contre-élément dans cette révision ; vérifier que la recherche est suffisamment bornée.</li>{% endfor %}</ul></section>
+</div>
+
+{% if revision.public_payload.coverage %}<section><h2>Couverture</h2><p>{{ revision.public_payload.coverage.period_start }} → {{ revision.public_payload.coverage.period_end }} · {{ revision.public_payload.coverage.retrieved_count }} récupéré(s), {{ revision.public_payload.coverage.normalized_count }} normalisé(s), {{ revision.public_payload.coverage.publishable_count }} publiable(s). Attendus : {% if revision.public_payload.coverage.expected_state == 'known' %}{{ revision.public_payload.coverage.expected_count }}{% else %}non établis{% endif %}.</p><p>{{ revision.public_payload.coverage.statement }}</p><ul>{% for exclusion in revision.public_payload.coverage.exclusions %}<li>{{ exclusion }}</li>{% endfor %}</ul></section>{% endif %}
+
+<section id="diffusion-selection"><h2>Sélection prévue pour la diffusion</h2>
+<p>Prévisualisation privée de la sélection de cette révision. Sa préparation ne vaut ni droits acquis, ni vérification favorable, ni autorisation personnelle de publier.</p>
+{% if diffusion_preview.available %}
+{% if diffusion_preview.verification_pending %}<p class="notice notice--danger"><strong>Nouvelle vérification documentaire attendue pour cette révision.</strong> La file indique « À vérifier ». Les reçus des versions précédentes ne couvrent pas cette sélection ; la porte de diffusion reste fermée.</p>
+{% elif diffusion_preview.verification_blocked %}<p class="notice notice--danger"><strong>Cette révision ne dispose pas d’un contrôle documentaire favorable courant.</strong> État de la file : {{ diffusion_preview.verification_state }}. La porte de diffusion reste fermée.</p>{% endif %}
+<p>{{ diffusion_preview.passages|length }} extrait(s) sélectionné(s). {{ diffusion_preview.retained_private_passages }} passage(s) de travail restent conservés dans l’Atelier ; le Site ne reçoit pas cette archive privée.</p>
+{% for passage in diffusion_preview.passages %}<article><blockquote>{{ passage.exact_quote }}</blockquote><p><strong>Crédit :</strong> {{ passage.attribution }}</p><p>Repère dans la pièce : {{ passage.locator }}</p><p>Version : {{ passage.source_version.version_id }}</p>{{ passage.source_version.public_url|qualified_source_link:"Consulter la pièce originale" }}</article>{% endfor %}
+<p><strong>Réserve de diffusion :</strong> {{ diffusion_preview.public_note }}</p>
+<p>Une modification de cette sélection appartient à une nouvelle révision et demande les contrôles et avis liés à cette version exacte.</p>
+{% else %}<p>Sélection non préparée ou non recevable : {{ diffusion_preview.error }}</p>{% endif %}
+<details><summary>Consulter les passages complets du travail privé</summary><p>Ces pièces servent au jugement et à la revue Atelier. Ce bloc privé ne fait pas partie de la sélection transmise au Site.</p>
+{% for passage in revision.public_payload.evidence %}<article><p>{{ passage.locator }}</p><blockquote>{{ passage.exact_quote }}</blockquote></article>{% endfor %}</details>
+</section>
+
+<div class="columns">
+<section><h2>Contrôles techniques</h2><p>Ces contrôles mécaniques ne certifient ni une conclusion politique, ni la complétude documentaire, ni une revue humaine.</p><ul>{% for control in controls %}<li><strong>{{ control.control_type|review_label }}</strong> — {% if control.passed %}réussi{% else %}échec : {{ control.anomaly_code }}{% endif %}<br>{{ control.evidence }}</li>{% empty %}<li>Aucun contrôle pour cet environnement.</li>{% endfor %}</ul></section>
+<section><h2>Versions des preuves</h2><ul>{% for source in revision.source_snapshot %}<li><code>{{ source.source_id }}@{{ source.version_id }}</code><br>{{ source.public_url|qualified_source_link:"Ouvrir la source publique" }}</li>{% endfor %}</ul></section>
+</div>
+
+<details><summary>Changements depuis la révision précédente</summary><pre>{% for line in differences %}{{ line }}
+{% empty %}Première révision.{% endfor %}</pre></details>
+
+<section id="decision" class="decision-panel"><p class="eyebrow">Action humaine</p><h2>Décider sur cette version</h2>
+<details><summary>Contenu substantiel complet et figé de la revue privée</summary>
+<p>Cette représentation exhaustive inclut décomptes, résultat, identités, affiliations, actes, preuves, méthode et exclusions lorsqu’ils existent. Les objets courants ne la remplacent pas.</p>
+<pre class="public-snapshot" style="white-space:pre-wrap;overflow-wrap:anywhere">{{ public_snapshot_json }}</pre></details>
+<form action="{% url 'review_action' dossier.pk %}" method="post">{% csrf_token %}{{ action_form.expected_revision }}{{ action_form.expected_digest }}<input type="hidden" name="mode" value="review">
+  <label for="id_decision">Action</label>{{ action_form.decision }}
+  <label for="id_note">Note privée</label>{{ action_form.note }}
+  <button type="submit">Enregistrer l’action</button>
+</form></section>
+
+<details><summary>La version doit être corrigée</summary>
+<form action="{% url 'review_action' dossier.pk %}" method="post">{% csrf_token %}<input type="hidden" name="mode" value="correct">
+  {{ correction_form.as_div }}<button type="submit">Créer la nouvelle révision</button>
+</form></details>
+{% endblock %}

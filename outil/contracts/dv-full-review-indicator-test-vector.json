@@ -1,0 +1,103 @@
+{
+  "classification": "synthetic_test_only_never_human_review",
+  "public_key_base64": "+60sBay0BtQGOYt1TFn8n35kj8NJf76NfA8uK+HCycc=",
+  "bundle": {
+    "format": "dv.full-review/0.1.0-draft.2",
+    "record_id": "EDITORIAL:4",
+    "record_revision": 1,
+    "environment": "test",
+    "destination": "dv-site:test",
+    "content_kind": "speech_vote",
+    "data_scope": "synthetic",
+    "snapshot_digest": "6df377dd3c117d8bc4a170e9ab892d0856d5c9a6a32a8a98cee97ddc5864769d",
+    "public": {
+      "title": "FICTIF — comparaison de recette",
+      "short_answer": "Proposition documentaire à revoir.",
+      "main_caveat": "Portée limitée à ce cas.",
+      "reasoning": "Les six critères sont explicités ci-dessous.",
+      "result": "convergence",
+      "declaration_quote": "Nous ne promettons pas une conclusion sans preuve.",
+      "declaration_date": "2024-01-30",
+      "declaration_date_state": "known",
+      "declaration_source_url": "https://www.assemblee-nationale.fr/dyn/16/comptes-rendus/exemple",
+      "official_text_url": "https://www.assemblee-nationale.fr/dyn/16/textes/l16b1983_projet-loi",
+      "official_vote_url": "https://www.assemblee-nationale.fr/dyn/16/scrutins/3289",
+      "scope": "Acteur et scrutin explicitement bornés.",
+      "counterevidence": [],
+      "coverage": {
+        "period_start": "2024-01-01",
+        "period_end": "2024-01-01",
+        "expected_state": "unknown",
+        "expected_count": null,
+        "retrieved_count": 1,
+        "normalized_count": 1,
+        "publishable_count": 1,
+        "exclusions": [
+          "lot de test borné"
+        ],
+        "statement": "Aucune exhaustivité revendiquée."
+      },
+      "method_explanation": {
+        "attribution": "Acteur identifié.",
+        "object": "Objet explicite.",
+        "scope": "Portée explicite.",
+        "chronology": "Chronologie vérifiée.",
+        "procedure": "Procédure vérifiée.",
+        "counterevidence": "Recherche documentée, résultat vide admis."
+      },
+      "themes": []
+    },
+    "source_versions": [
+      {
+        "source_id": "SRC:1",
+        "version_id": "v:3",
+        "sha256": "ea90ffec6a9a5438cc37e61c490a44301f1f08239d653d61c56035ef409594b7",
+        "public_url": "https://www.assemblee-nationale.fr/src-1.json"
+      }
+    ],
+    "method_version": "DV-M0.1",
+    "indicator_candidate": {
+      "case_id": "EDITORIAL:4",
+      "actor_id": "TEST:person",
+      "actor_type": "person",
+      "declaration_id": "TEST:declaration",
+      "act_id": "TEST:act",
+      "institution": "Assemblée nationale",
+      "period_start": "2024-01-01",
+      "period_end": "2024-01-01",
+      "source_revision": 1,
+      "qualification": "convergence",
+      "vote_category": "against",
+      "identity_resolved": true,
+      "nominative_available": true,
+      "admissible": true,
+      "zero_evidence": [],
+      "repetition_key": "EDITORIAL:4",
+      "sources": [
+        {
+          "source_id": "SRC:1",
+          "version_id": "v:3",
+          "sha256": "ea90ffec6a9a5438cc37e61c490a44301f1f08239d653d61c56035ef409594b7",
+          "public_url": "https://www.assemblee-nationale.fr/src-1.json"
+        }
+      ],
+      "method_version": "DV-INDICATOR-UNWEIGHTED-CANDIDATE-1",
+      "method_status": "candidate_not_approved",
+      "value": 1,
+      "zero_subtype": null,
+      "exclusion_reason": null
+    }
+  },
+  "proof": {
+    "statement": {
+      "algorithm": "ed25519",
+      "key_id": "test-offline",
+      "bundle_sha256": "433b3fa15ca3c33b1542c5f3004a5439f91432c367ec1a4bed22168ca72682a6",
+      "record_id": "EDITORIAL:4",
+      "record_revision": 1,
+      "decision": "approve",
+      "reviewed_at": "2026-09-14T07:34:54.703Z"
+    },
+    "signature": "8KC3H/6KDeJLM2W5TvF+tsnWc1jtx+AdWgRon+b7U7VBeZ+/7wmTShC+M1M/hCKJUmT7iykiritgHe8D9unsCQ=="
+  }
+}

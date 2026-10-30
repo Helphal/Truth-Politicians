@@ -1,0 +1,10 @@
+import {readFileSync} from 'node:fs';
+import {createHash,createPublicKey,verify} from 'node:crypto';
+const v=JSON.parse(readFileSync(process.argv[2]||'contracts/dv-full-review-indicator-test-vector.json','utf8'));
+const canon=v=>v===null||typeof v!=='object'?JSON.stringify(v):Array.isArray(v)?'['+v.map(canon).join(',')+']':'{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+canon(v[k])).join(',')+'}';
+const sha=v=>createHash('sha256').update(canon(v),'utf8').digest('hex');
+const key=createPublicKey({key:Buffer.concat([Buffer.from('302a300506032b6570032100','hex'),Buffer.from(v.public_key_base64,'base64')]),format:'der',type:'spki'});
+if(v.classification!=='synthetic_test_only_never_human_review'||v.bundle.format!=='dv.full-review/0.1.0-draft.2'||v.proof.statement.bundle_sha256!==sha(v.bundle)||!verify(null,Buffer.from('DV-FULL-REVIEW-ED25519-V1\n'+canon(v.proof.statement),'utf8'),key,Buffer.from(v.proof.signature,'base64')))throw Error('indicator_vector_invalid');
+const altered=structuredClone(v.bundle);altered.indicator_candidate.value=-1;
+if(sha(altered)===v.proof.statement.bundle_sha256)throw Error('alteration_not_detected');
+console.log(JSON.stringify({browser_generated_test_signature_valid:true,indicator_tamper_rejected:true,wordpress_executed:false,publication_authorized:false}));

@@ -1,0 +1,126 @@
+{
+  "scope": "synthetic_not_an_authorization",
+  "canonical_version": "DV-CANON-JSON-V1",
+  "test_key_material": "SYNTHETIC-CONTRACT-VECTOR-NOT-A-REAL-KEY",
+  "value": {
+    "accent": "é",
+    "emoji": "🌍",
+    "integers": [
+      0,
+      -1,
+      9007199254740991
+    ],
+    "absent": null
+  },
+  "canonical_utf8_hex": "7b22616273656e74223a6e756c6c2c22616363656e74223a22c3a9222c22656d6f6a69223a22f09f8c8d222c22696e746567657273223a5b302c2d312c393030373139393235343734303939315d7d",
+  "sha256": "a8f6201ebe44ef0e3865f5abc0c282fa01dadf05f2b190e4f02b781da9a16d8d",
+  "event": {
+    "event_schema_version": "dv.event/0.2.0-draft.1",
+    "environment": "test",
+    "destination": "dv-site:test",
+    "key_id": "synthetic-vector-event",
+    "expires_at": "2001-01-02T00:05:00+00:00",
+    "event_id": "00000000-0000-4000-8000-000000000001",
+    "sequence": 1,
+    "operation": "upsert",
+    "record_id": "SYNTHETIC:official_vote",
+    "record_revision": 1,
+    "payload_digest": "455abae6c549d0ed343c2e460c166c5a91303ea60dc28d33e1607933f2eafb2a",
+    "payload": {
+      "schema_version": "dv.content/0.4.0-draft.3",
+      "policy_version": "DV-PUB-3",
+      "record_id": "SYNTHETIC:official_vote",
+      "record_revision": 1,
+      "content_kind": "official_vote",
+      "data_scope": "synthetic",
+      "method_version": null,
+      "source_versions": [
+        {
+          "source_id": "SYNTHETIC:SOURCE",
+          "version_id": "fixture-v1",
+          "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "public_url": "https://www.assemblee-nationale.fr/fixture-test-only"
+        }
+      ],
+      "public": {
+        "institution": "Assemblée nationale",
+        "legislature": "16",
+        "session": "2023-2024",
+        "official_title": "Vote officiel",
+        "scrutin_id": "AN:16:SCRUTIN:3289",
+        "occurred_on": "2024-01-30",
+        "date_precision": "day",
+        "procedure": "scrutin public solennel",
+        "stage": "première lecture, version soumise",
+        "result_status": "adopted",
+        "official_text_url": "https://www.assemblee-nationale.fr/dyn/16/textes/l16b1983_projet-loi",
+        "official_vote_url": "https://www.assemblee-nationale.fr/dyn/16/scrutins/3289",
+        "text_reference_role": "submitted",
+        "nominative_status": "available",
+        "counts": {
+          "registered": {
+            "state": "unknown",
+            "value": null,
+            "reason": "non publié par la source"
+          },
+          "voters": {
+            "state": "known",
+            "value": 3
+          },
+          "expressed": {
+            "state": "known",
+            "value": 2
+          },
+          "for": {
+            "state": "known",
+            "value": 1
+          },
+          "against": {
+            "state": "known",
+            "value": 1
+          },
+          "abstention": {
+            "state": "known",
+            "value": 1
+          }
+        },
+        "coverage": {
+          "period_start": "2024-01-01",
+          "period_end": "2024-01-01",
+          "expected_state": "unknown",
+          "expected_count": null,
+          "retrieved_count": 1,
+          "normalized_count": 1,
+          "publishable_count": 1,
+          "exclusions": [
+            "lot de test borné"
+          ],
+          "statement": "Aucune exhaustivité revendiquée."
+        },
+        "themes": []
+      },
+      "authorization": {
+        "route": "automatic_checked",
+        "snapshot_digest": "0c73b57b3c6cb86a16e24b60667677851b8250c83b7044404b2108a95765c064",
+        "public_review": {
+          "nature": "controles_automatiques"
+        }
+      }
+    },
+    "signature_algorithm": "HMAC-SHA256",
+    "signature": "569784346ae247ecf9b307a1e00b850ae3eee70fe5e3895f1cdcab455765b208"
+  },
+  "receipt": {
+    "receipt_schema_version": "dv.receipt/0.1.0-draft.1",
+    "event_id": "00000000-0000-4000-8000-000000000001",
+    "sequence": 1,
+    "record_id": "SYNTHETIC:official_vote",
+    "environment": "test",
+    "destination": "dv-site:test",
+    "key_id": "synthetic-vector-receipt",
+    "event_digest": "fd0246c6f7ef192338f42b02378183e02da39b9515ce7327e2d910dd2032e8f2",
+    "status": "applied",
+    "signature_algorithm": "HMAC-SHA256",
+    "signature": "bb349155c6f3e977b90db629902d64f98521825b6007e598d06b283a898d513c"
+  }
+}

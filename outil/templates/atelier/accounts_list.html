@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Comptes{% endblock %}
+{% block content %}
+<section class="wide">
+  <p class="eyebrow">Administration privée</p>
+  <h1>Comptes de l’atelier</h1>
+  <p class="lede">Pseudonymes de connexion régénérables ; identité interne immuable. Capacités admin uniquement via entrée privée (LAN / Tailscale — qualification NAS séparée).</p>
+  <p><a class="button" href="{% url 'accounts_create' %}">Créer un compte</a></p>
+  {% if one_shot_secret %}
+  <div class="notice notice--info" role="status">
+    <p><strong>Secret initial — affichage unique.</strong> Non stocké en session ni en base.</p>
+    <ul>
+      <li>Identifiant : <code>{{ one_shot_secret.login }}</code></li>
+      {% if one_shot_secret.temporary_password %}
+      <li>Mot de passe temporaire : <code>{{ one_shot_secret.temporary_password }}</code></li>
+      {% endif %}
+      {% if one_shot_secret.invite_token %}
+      <li>Jeton d’invitation : <code>{{ one_shot_secret.invite_token }}</code></li>
+      {% endif %}
+    </ul>
+  </div>
+  {% endif %}
+  <table>
+    <thead>
+      <tr>
+        <th>Pseudonyme</th>
+        <th>Rôle</th>
+        <th>État</th>
+        <th>Créé</th>
+        <th>Dernière activité</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for profile in profiles %}
+      <tr>
+        <td>{{ profile.login_pseudonym }}</td>
+        <td>{{ profile.get_role_display }}</td>
+        <td>{{ profile.get_account_status_display }}</td>
+        <td>{{ profile.created_at|date:"Y-m-d H:i" }}</td>
+        <td>{% if profile.last_activity_at %}{{ profile.last_activity_at|date:"Y-m-d H:i" }}{% else %}—{% endif %}</td>
+        <td class="actions">
+          {% if profile.account_status == "active" %}
+          <form method="post" action="{% url 'accounts_action' profile.pk %}">{% csrf_token %}
+            <input type="hidden" name="action" value="suspend">
+            <button type="submit">Suspendre</button>
+          </form>
+          {% elif profile.account_status == "suspended" %}
+          <form method="post" action="{% url 'accounts_action' profile.pk %}">{% csrf_token %}
+            <input type="hidden" name="action" value="reactivate">
+            <button type="submit">Réactiver</button>
+          </form>
+          {% endif %}
+          <form method="post" action="{% url 'accounts_action' profile.pk %}" onsubmit="return confirm('Révoquer définitivement ce compte ?');">{% csrf_token %}
+            <input type="hidden" name="action" value="revoke">
+            <input type="hidden" name="confirm" value="1">
+            <button type="submit">Révoquer</button>
+          </form>
+          <form method="post" action="{% url 'accounts_action' profile.pk %}" onsubmit="return confirm('Réinitialiser l’accès et révoquer les sessions ?');">{% csrf_token %}
+            <input type="hidden" name="action" value="reset">
+            <input type="hidden" name="confirm" value="1">
+            <button type="submit">Réinit. accès</button>
+          </form>
+          <form method="post" action="{% url 'accounts_action' profile.pk %}" onsubmit="return confirm('Régénérer le pseudonyme de connexion ? L’identité interne est conservée.');">{% csrf_token %}
+            <input type="hidden" name="action" value="regenerate_pseudonym">
+            <input type="hidden" name="confirm" value="1">
+            <button type="submit">Nouveau pseudo</button>
+          </form>
+          {% if profile.user_id != request.user.id %}
+          <form method="post" action="{% url 'accounts_action' profile.pk %}">{% csrf_token %}
+            <input type="hidden" name="action" value="set_role">
+            <select name="role">
+              <option value="editor">Éditeur</option>
+              <option value="admin">Admin</option>
+              <option value="reviewer">Relecteur</option>
+              <option value="operator">Opérateur</option>
+              <option value="collector">Collecte</option>
+            </select>
+            <button type="submit">Changer rôle</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">Aucun compte.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

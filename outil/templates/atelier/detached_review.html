@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Signature détachée — essai fictif</h1>
+<p>Ce parcours ne signe jamais au nom du responsable éditorial. L'approbation ne prouve ni réception Site ni publication.</p>
+<p>Dossier {{ dossier.stable_id }}, révision {{ revision.revision }}. La signature couvre le contenu complet, ses preuves, contre-éléments et versions.</p>
+<ol><li><a href="?download=bundle">Télécharger le contenu complet à examiner</a>.</li>
+<li>Ouvrir le client hors ligne fourni dans le paquet, examiner toutes les rubriques, puis produire le retour signé fictif. La clé publique de test doit être configurée séparément par l'opérateur ; une clé déclarée dans le fichier n'est jamais acceptée comme autorité.</li>
+<li>Importer le retour ci-dessous. Une correction intermédiaire oblige à refaire la revue.</li></ol>
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+<label for="signed-review">Retour de signature fictive</label><input id="signed-review" type="file" name="signed_review" accept="application/json" required>
+<button type="submit">Vérifier le retour et enregistrer la revue de test</button></form>
+<p><a href="{% url 'review' dossier.pk %}">Retour au dossier</a></p>
+{% endblock %}

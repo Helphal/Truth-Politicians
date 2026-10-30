@@ -1,0 +1,25 @@
+# Paquet logiciel : code, contrats, documentation et exemple Docker local.
+# Les données, configurations privées et secrets sont exclus par build_release.py.
+README.md
+PUBLIC_EXPORT.md
+requirements.lock
+requirements-mariadb.lock
+requirements-qualification-linux-py312.lock
+requirements-qualification-linux-aarch64-py312.lock
+requirements-qualification-windows-py312.lock
+requirements-qualification-windows-py313.lock
+manage.py
+.dockerignore
+dv_project
+atelier
+templates
+contracts
+fixtures
+docs
+deploy
+reference
+tests
+review_regressions.py
+review_followup.py
+scripts
+release-include.txt

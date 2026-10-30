@@ -1,0 +1,365 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "dv.content/0.4.0-draft.1"
+    },
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "record_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "content_kind": {
+      "enum": [
+        "official_vote",
+        "vote_comparison",
+        "speech_vote"
+      ]
+    },
+    "policy_version": {
+      "const": "DV-PUB-1"
+    },
+    "method_version": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "data_scope": {
+      "enum": [
+        "synthetic",
+        "real"
+      ]
+    },
+    "source_versions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "public_url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          }
+        },
+        "required": [
+          "source_id",
+          "version",
+          "public_url"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "public": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_id",
+    "record_revision",
+    "content_kind",
+    "policy_version",
+    "method_version",
+    "data_scope",
+    "source_versions",
+    "public"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:truth-politicians:content:0.4.0-draft.1",
+  "title": "Brouillon de trois familles de publication — pas API Site adoptée",
+  "description": "Validation de structure uniquement. La revue, la véracité, les droits et les versions sont vérifiés par des services de confiance. Voir la mission M01. Autres entités publiques à formaliser.",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "content_kind": {
+            "const": "official_vote"
+          }
+        },
+        "required": [
+          "content_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "public": {
+            "type": "object",
+            "properties": {
+              "institution": {
+                "type": "string",
+                "minLength": 1
+              },
+              "official_title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "scrutin_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "occurred_on": {
+                "type": "string",
+                "format": "date"
+              },
+              "stage": {
+                "type": "string",
+                "minLength": 1
+              },
+              "official_text_url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://"
+              },
+              "official_vote_url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://"
+              },
+              "text_reference_role": {
+                "enum": [
+                  "submitted",
+                  "result_only",
+                  "unresolved"
+                ]
+              },
+              "nominative_status": {
+                "enum": [
+                  "available",
+                  "partial",
+                  "not_available"
+                ]
+              },
+              "counts": {
+                "type": "object",
+                "properties": {
+                  "for": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "against": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "abstention": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "for",
+                  "against",
+                  "abstention"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "institution",
+              "official_title",
+              "scrutin_id",
+              "occurred_on",
+              "stage",
+              "official_text_url",
+              "official_vote_url",
+              "text_reference_role",
+              "nominative_status",
+              "counts"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "content_kind": {
+            "const": "vote_comparison"
+          }
+        },
+        "required": [
+          "content_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "public": {
+            "type": "object",
+            "properties": {
+              "rule_id": {
+                "const": "PAIR_EQUAL_KNOWN_V1"
+              },
+              "scope": {
+                "type": "string",
+                "minLength": 1
+              },
+              "observations": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "scrutin_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "left": {
+                      "enum": [
+                        "for",
+                        "against",
+                        "abstention",
+                        "non_voting",
+                        "not_recorded",
+                        null
+                      ]
+                    },
+                    "right": {
+                      "enum": [
+                        "for",
+                        "against",
+                        "abstention",
+                        "non_voting",
+                        "not_recorded",
+                        null
+                      ]
+                    },
+                    "official_text_url": {
+                      "type": "string",
+                      "format": "uri",
+                      "pattern": "^https://"
+                    },
+                    "official_vote_url": {
+                      "type": "string",
+                      "format": "uri",
+                      "pattern": "^https://"
+                    }
+                  },
+                  "required": [
+                    "scrutin_id",
+                    "left",
+                    "right",
+                    "official_text_url",
+                    "official_vote_url"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "rule_id",
+              "scope",
+              "observations"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "content_kind": {
+            "const": "speech_vote"
+          }
+        },
+        "required": [
+          "content_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "public": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "short_answer": {
+                "type": "string",
+                "minLength": 1
+              },
+              "main_caveat": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reasoning": {
+                "type": "string",
+                "minLength": 1
+              },
+              "result": {
+                "enum": [
+                  "convergence",
+                  "divergence",
+                  "evolution",
+                  "mixed",
+                  "not_comparable",
+                  "inconclusive"
+                ]
+              },
+              "declaration_quote": {
+                "type": "string",
+                "minLength": 1
+              },
+              "declaration_source_url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://"
+              },
+              "official_text_url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://"
+              },
+              "official_vote_url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://"
+              }
+            },
+            "required": [
+              "title",
+              "short_answer",
+              "main_caveat",
+              "reasoning",
+              "result",
+              "declaration_quote",
+              "declaration_source_url",
+              "official_text_url",
+              "official_vote_url"
+            ],
+            "additionalProperties": false
+          },
+          "method_version": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  ]
+}

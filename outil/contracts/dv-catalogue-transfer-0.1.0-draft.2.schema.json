@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dv:catalogue-transfer:0.1.0-draft.2",
+  "title": "Catalogue paginé candidat : générations par périmètre et instantanés immuables",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "environment",
+    "destination",
+    "key_id",
+    "snapshot_sha256",
+    "source_versions",
+    "scope_scrutiny_ids",
+    "family_counts",
+    "page_sha256",
+    "catalogue_metadata",
+    "signature",
+    "generation"
+  ],
+  "properties": {
+    "format": {
+      "const": "dv.catalogue-transfer/0.1.0-draft.2"
+    },
+    "environment": {
+      "const": "test"
+    },
+    "destination": {
+      "const": "dv-site:test"
+    },
+    "key_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "snapshot_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "signature": {
+      "$ref": "#/$defs/hash"
+    },
+    "source_versions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_id",
+          "version_id",
+          "sha256",
+          "public_url"
+        ],
+        "properties": {
+          "source_id": {
+            "type": "string"
+          },
+          "version_id": {
+            "type": "string"
+          },
+          "sha256": {
+            "$ref": "#/$defs/hash"
+          },
+          "public_url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          }
+        }
+      }
+    },
+    "scope_scrutiny_ids": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 25,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "page_sha256": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {
+        "$ref": "#/$defs/hash"
+      }
+    },
+    "family_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "persons",
+        "organizations",
+        "affiliations",
+        "mandates",
+        "text_versions",
+        "legislative_dossiers",
+        "scrutinies",
+        "vote_observations"
+      ],
+      "properties": {
+        "persons": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25000
+        },
+        "organizations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25000
+        },
+        "affiliations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25000
+        },
+        "mandates": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25000
+        },
+        "text_versions": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25000
+        },
+        "legislative_dossiers": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25000
+        },
+        "scrutinies": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25000
+        },
+        "vote_observations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 25000
+        }
+      }
+    },
+    "catalogue_metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_scrutiny_ids",
+        "pagination",
+        "exclusions"
+      ],
+      "properties": {
+        "scope_scrutiny_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pagination": {
+          "type": "object"
+        },
+        "exclusions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

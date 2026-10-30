@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Textes et votes{% endblock %}
+{% block content %}
+<header class="page-header"><p class="eyebrow">Catalogue factuel</p><h1>Textes et votes</h1><p class="lede">Consultez le résultat enregistré et ouvrez séparément la version du texte et le scrutin officiel.</p></header>
+<form method="get" class="filters"><label>Recherche <input name="q" value="{{ query }}"></label><label>Institution <input name="institution" value="{{ institution }}"></label><button type="submit">Filtrer</button></form>
+<div class="table-wrap"><table><thead><tr><th>Date</th><th>Institution</th><th>Objet</th><th>Résultat</th><th>Preuves officielles</th></tr></thead><tbody>
+{% for vote in page %}<tr><td>{{ vote.occurred_on }}</td><td>{{ vote.institution }}<br><code>{{ vote.source_identifier }}</code></td><td>{{ vote.official_title }}{% if vote.anomaly %}<p class="notice">{{ vote.anomaly }}</p>{% endif %}</td><td>{{ vote.count_for|default_if_none:"inconnu" }} pour · {{ vote.count_against|default_if_none:"inconnu" }} contre · {{ vote.count_abstention|default_if_none:"inconnu" }} abstention(s)</td><td>{% if vote.submitted_text.relation == 'other' %}<p>Texte/version exacts non qualifiés. La page de collecte n'est pas présentée comme le texte officiel.</p>{% else %}<a href="{{ vote.submitted_text.official_url }}" rel="noopener noreferrer" target="_blank">Consulter la version du texte référencée</a>{% endif %}<br><a href="{{ vote.official_vote_url }}" rel="noopener noreferrer" target="_blank">Consulter la référence de scrutin</a></td></tr>{% empty %}<tr><td colspan="5">Aucun scrutin normalisé.</td></tr>{% endfor %}
+</tbody></table></div>{% include "atelier/_pagination.html" %}
+{% endblock %}

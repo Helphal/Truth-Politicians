@@ -1,0 +1,48 @@
+{% load static %}<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>{% block title %}Atelier{% endblock %} — Truth Politicians</title>
+  <link rel="stylesheet" href="{% static 'atelier/app.css' %}?v=suite-b005-text-size-1">
+</head>
+<body>
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <header class="site-header">
+    <div class="topbar-inner">
+      <a class="brand" href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}" aria-label="Truth Politicians — accueil de l’atelier">
+        <span class="brand-mark" aria-hidden="true">TP</span>
+        <span class="brand-copy"><span class="brand-name">Truth Politicians</span><span class="brand-kicker">Atelier de vérification</span></span>
+      </a>
+      <div class="header-actions">
+        <span class="environment-pill">Privé · {{ dv_environment }}</span>
+        {% if user.is_authenticated %}<form action="{% url 'logout' %}" method="post">{% csrf_token %}<button class="link-button" type="submit">Se déconnecter</button></form>{% endif %}
+      </div>
+    </div>
+    {% if user.is_authenticated %}
+    <nav class="primary-nav" aria-label="Navigation principale"><div class="nav-inner">
+      <a href="{% url 'dashboard' %}"{% if request.resolver_match.url_name == 'dashboard' %} aria-current="page"{% endif %}>Vue d’ensemble</a>
+      <a href="{% url 'dossiers' %}"{% if request.resolver_match.url_name == 'dossiers' or request.resolver_match.url_name == 'review' %} aria-current="page"{% endif %}>Dossiers</a>
+      <a href="{% url 'verification_index' %}"{% if request.resolver_match.url_name == 'verification_index' or request.resolver_match.url_name == 'verification_detail' %} aria-current="page"{% endif %}>Vérification</a>
+      <a href="{% url 'facts' %}"{% if request.resolver_match.url_name == 'facts' %} aria-current="page"{% endif %}>Textes &amp; votes</a>
+      <a href="{% url 'thematic_comparisons' %}"{% if request.resolver_match.url_name == 'thematic_comparisons' or request.resolver_match.url_name == 'thematic_qualification' %} aria-current="page"{% endif %}>Parole ↔ votes</a>
+      <a href="{% url 'documentary_search' %}"{% if request.resolver_match.url_name == 'documentary_search' or request.resolver_match.url_name == 'research_preparation' %} aria-current="page"{% endif %}>Recherche</a>
+      <a href="{% url 'sources' %}"{% if request.resolver_match.url_name == 'sources' %} aria-current="page"{% endif %}>Sources</a>
+      <a href="{% url 'feeds_coverage' %}"{% if request.resolver_match.url_name == 'feeds_coverage' %} aria-current="page"{% endif %}>Alimentation</a>
+      <a href="{% url 'explain_index' %}"{% if request.resolver_match.url_name == 'explain_index' or request.resolver_match.url_name == 'explain_detail' %} aria-current="page"{% endif %}>Comprendre</a>
+      <a href="{% url 'staged_votes' %}"{% if request.resolver_match.url_name == 'staged_votes' %} aria-current="page"{% endif %}>Archives</a>
+      <a href="{% url 'publications' %}"{% if request.resolver_match.url_name == 'publications' %} aria-current="page"{% endif %}>Publications</a>
+      {% if dv_is_account_admin %}
+      <a href="{% url 'accounts_list' %}"{% if request.resolver_match.url_name == 'accounts_list' or request.resolver_match.url_name == 'accounts_create' %} aria-current="page"{% endif %}>Comptes</a>
+      {% endif %}
+    </div></nav>
+    {% endif %}
+  </header>
+  <main id="contenu" tabindex="-1">
+    {% for message in messages %}<div class="message {{ message.tags }}" role="status">{{ message }}</div>{% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer"><div class="footer-inner"><strong>Truth Politicians</strong><span>Contrat candidat {{ dv_schema }} · aucune publication publique implicite</span></div></footer>
+</body>
+</html>

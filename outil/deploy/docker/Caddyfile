@@ -1,0 +1,11 @@
+:8080 {
+    handle_path /static/* {
+        root * /srv/static
+        file_server
+    }
+    handle {
+        reverse_proxy atelier:8000 {
+            header_up -X-DV-Private-Entry
+        }
+    }
+}

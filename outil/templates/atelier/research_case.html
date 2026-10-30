@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block content %}
+<h1>Dossier de recherche : {{ case.query }}</h1><p>{% if created %}Nouveau dossier{% else %}Dossier déjà préparé, aucun doublon{% endif %}. Pièces à qualifier ; aucune conclusion ou revue créée.</p>
+<p>Corpus : <code>{{ case.corpus_version }}</code>. {{ case.candidate_evidence.limits }}</p>
+{% include "atelier/_research_preparation.html" %}
+<h2>Passages retrouvés</h2>{% for item in case.candidate_evidence.passages.results %}<article><blockquote>{{ item.text }}</blockquote><p>{{ item.locator }} · <a href="{{ item.source_version.public_url }}">Source officielle</a> · {{ item.source_version.sha256 }}</p></article>{% empty %}<p>Aucun passage dans ce corpus limité, pas preuve d'absence de déclaration.</p>{% endfor %}
+<h2>Déclarations et actes candidats</h2>{% for item in case.candidate_evidence.declarations_and_votes.candidates %}<article><h3>{{ item.speaker }}</h3><blockquote>{{ item.exact_quote }}</blockquote><p>{{ item.proposal.main_caveat }}</p>{% for vote in item.vote_candidates %}<p>{{ vote.scrutiny_id }} — {{ vote.reservations|join:" · " }}</p>{% endfor %}</article>{% empty %}<p>Aucun rapprochement préparé parmi les déclarations normalisées.</p>{% endfor %}
+<details><summary>Exclusions de recherche</summary>{% for item in case.candidate_evidence.declarations_and_votes.exclusions %}<p>{{ item }}</p>{% empty %}<p>Aucune exclusion signalée dans le segment parcouru.</p>{% endfor %}</details><p><a href="{% url 'documentary_search' %}">Revenir à la recherche</a></p>{% endblock %}

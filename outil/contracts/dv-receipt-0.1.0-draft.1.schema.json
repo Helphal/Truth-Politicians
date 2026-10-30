@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dv:receipt:0.1.0-draft.1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "receipt_schema_version": {
+      "const": "dv.receipt/0.1.0-draft.1"
+    },
+    "event_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environment": {
+      "enum": [
+        "test",
+        "private",
+        "production"
+      ]
+    },
+    "destination": {
+      "type": "string",
+      "pattern": "^dv-site:(test|private|production)$"
+    },
+    "key_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "status": {
+      "enum": [
+        "applied",
+        "duplicate"
+      ]
+    },
+    "signature_algorithm": {
+      "const": "HMAC-SHA256"
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "receipt_schema_version",
+    "event_id",
+    "sequence",
+    "record_id",
+    "environment",
+    "destination",
+    "key_id",
+    "event_digest",
+    "status",
+    "signature_algorithm",
+    "signature"
+  ]
+}

@@ -1,0 +1,48 @@
+name: truth-politicians
+services:
+  atelier:
+    image: truth-politicians-outil:local
+    platform: linux/amd64
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    environment: &app_environment
+      DV_ENV: local
+      DV_DEBUG: "0"
+      DV_ALLOWED_HOSTS: localhost,127.0.0.1
+      DV_NETWORK_MODE: disabled
+      DV_RUNTIME_DIR: /app/runtime
+    volumes:
+      - runtime:/app/runtime
+      - static_assets:/app/runtime/static
+    command: ["sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput --clear && exec gunicorn dv_project.wsgi:application --bind 0.0.0.0:8000 --workers 1 --threads 4 --timeout 90 --error-logfile -"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/sante/', timeout=5)"]
+      interval: 30s
+      timeout: 8s
+      retries: 5
+      start_period: 30s
+  proxy:
+    image: caddy:2.10-alpine
+    ports:
+      - "127.0.0.1:${TP_LOCAL_PORT:-8000}:8080"
+    depends_on:
+      atelier:
+        condition: service_healthy
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - static_assets:/srv/static:ro
+  scheduler:
+    profiles: [scheduler]
+    image: truth-politicians-outil:local
+    platform: linux/amd64
+    environment: *app_environment
+    volumes:
+      - runtime:/app/runtime
+    depends_on:
+      atelier:
+        condition: service_healthy
+    command: ["python", "manage.py", "run_private_scheduler"]
+volumes:
+  runtime:
+  static_assets:

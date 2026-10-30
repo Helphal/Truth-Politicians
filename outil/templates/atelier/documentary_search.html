@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Recherche documentaire{% endblock %}
+{% block content %}
+<header class="page-header"><p class="eyebrow">Exploration du corpus</p><h1>Retrouver un passage sourcé</h1><p class="lede">Cherchez dans les documents conservés, puis préparez un dossier de pièces sans transformer un résultat lexical en conclusion.</p></header>
+<section><h2>Préparer une recherche</h2><form method="post">{% csrf_token %}<label for="prepare-query">Sujet, personne ou expression à documenter</label><input id="prepare-query" name="q" minlength="3" maxlength="500" required placeholder="Ex. hydrocarbures outre-mer"><button type="submit">Chercher et conserver les pièces</button></form></section>
+<section><h2>Recherches conservées</h2><ul>{% for case in prepared_cases %}<li><a href="{% url 'research_preparation' case.pk %}">{{ case.query }}</a> — pièces à qualifier, sans approbation</li>{% empty %}<li>Aucune recherche conservée.</li>{% endfor %}</ul><p class="table-subtitle">Les 50 recherches les plus récentes sont listées ; chaque dossier conserve son lien privé permanent.</p></section>
+<section class="notice notice--info"><h2>Recherche rapide dans l’index</h2><p>Les PDF et les sources non indexées ne sont pas parcourus. Un résultat est une pièce candidate, pas une conclusion ni une revue.</p><form method="get"><label for="query">Tous les termes à rechercher</label><input id="query" name="q" value="{{ query }}" maxlength="500" required><button type="submit">Rechercher dans les passages</button></form></section>
+{% if error %}<p role="alert">{{ error }}</p>{% endif %}
+{% if result %}
+<p>Version du corpus : <code>{{ result.corpus_version }}</code>. Les caractères accentués sont normalisés pour la recherche, pas dans les citations affichées.</p>
+{% for item in result.results %}<article><h2>{{ item.source_version.source_id }}</h2><blockquote>{{ item.text }}</blockquote><p>{{ item.locator }}</p><p><a href="{{ item.source_version.public_url }}" target="_blank" rel="noopener noreferrer">Ouvrir la source officielle</a> · version {{ item.source_version.version_id }} · empreinte <code>{{ item.source_version.sha256 }}</code></p></article>{% empty %}<p>Aucun passage trouvé dans cet index limité. Cela ne prouve pas l’absence de déclaration.</p>{% endfor %}
+{% if result.next_cursor %}<a href="?q={{ query|urlencode }}&amp;cursor={{ result.next_cursor|urlencode }}">Passages suivants, même version du corpus</a>{% endif %}
+{% endif %}
+{% endblock %}

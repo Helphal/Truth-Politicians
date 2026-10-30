@@ -1,0 +1,8 @@
+{% with preparation=case.preparations.last %}{% if preparation %}
+<h2>Préparation documentaire versionnée</h2><p>{{ preparation.payload.coverage }} Aucun dossier politique approuvé.</p>
+<p class="notice">{{ preparation.payload.blocking_reason }}</p><p>Empreinte : <code>{{ preparation.preparation_digest }}</code></p>
+<h3>Pièces et rôles</h3>
+{% for section in preparation.payload.sections %}<article><h4>{{ section.role }}</h4><p>{{ section.evidence.text }}{{ section.evidence.exact_quote }}</p><p>{{ section.evidence.locator }}</p><p>{{ section.inclusion_reason }}</p><a href="{{ section.evidence.source_version.public_url }}" rel="noopener noreferrer">Version officielle</a></article>{% empty %}<p>Aucune pièce attribuable dans ce périmètre.</p>{% endfor %}
+<h3>Recherche de contre-éléments</h3>
+{% for item in preparation.payload.counter_searches %}<article><h4>{{ item.search.query }}</h4><p>{{ item.assessment }}</p>{% for hit in item.search.results %}<p>{{ hit.text }}</p><p>{{ hit.locator }} · <a href="{{ hit.source_version.public_url }}" rel="noopener noreferrer">Source</a></p>{% empty %}<p>Aucun résultat local ; cela ne prouve pas une absence de contre-élément.</p>{% endfor %}</article>{% endfor %}
+{% endif %}{% endwith %}

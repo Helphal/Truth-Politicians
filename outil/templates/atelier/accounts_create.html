@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Créer un compte{% endblock %}
+{% block content %}
+<section class="narrow">
+  <p class="eyebrow">Administration privée</p>
+  <h1>Création rapide de compte</h1>
+  <p class="lede">Trois gestes : choisir le rôle, confirmer, récupérer le pseudonyme mémorisable et le secret initial. Aucune identité réelle ni e-mail imposé ; pas de choix manuel du login.</p>
+  {% if one_shot_secret %}
+  <div class="notice notice--info" role="status">
+    <p><strong>Secret initial — affichage unique.</strong> Remise hors application par le responsable éditorial. Non conservé en clair.</p>
+    <ul>
+      <li>Identifiant : <code>{{ one_shot_secret.login }}</code></li>
+      <li>Rôle : <code>{{ one_shot_secret.role }}</code></li>
+      {% if one_shot_secret.temporary_password %}
+      <li>Mot de passe temporaire : <code>{{ one_shot_secret.temporary_password }}</code></li>
+      {% endif %}
+      {% if one_shot_secret.invite_token %}
+      <li>Jeton d’invitation : <code>{{ one_shot_secret.invite_token }}</code></li>
+      {% endif %}
+    </ul>
+    <p><a href="{% url 'accounts_list' %}">Retour à la liste</a></p>
+  </div>
+  {% endif %}
+  <form method="post" autocomplete="off">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Créer le compte</button>
+  </form>
+</section>
+{% endblock %}

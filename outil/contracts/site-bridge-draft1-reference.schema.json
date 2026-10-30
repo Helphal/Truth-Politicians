@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:truth-politicians:site-bridge:0.1.0-draft.1",
+  "title": "Contrat de raccordement facultatif de Truth Politicians",
+  "description": "Brouillon technique non adopté par l'atelier. Les comparaisons analytiques exigent une attestation externe portant sur la révision exacte.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["bridge_schema", "batch_id", "idempotency_key", "generated_at", "records"],
+  "properties": {
+    "bridge_schema": { "const": "dv-site-bridge/0.1.0-draft.1" },
+    "batch_id": { "$ref": "#/$defs/id" },
+    "idempotency_key": { "$ref": "#/$defs/id" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": { "$ref": "#/$defs/record" }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 191, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$" },
+    "text": { "type": "string", "minLength": 1, "maxLength": 10000 },
+    "date": { "type": "string", "format": "date" },
+    "datetime": { "type": "string", "format": "date-time" },
+    "url": { "type": "string", "format": "uri", "maxLength": 512, "pattern": "^https://" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "status": { "enum": ["published", "draft", "review_required", "suspended"] },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_fidelity", "identity", "procedure", "coverage", "public_sources", "reuse", "privacy"],
+      "properties": {
+        "source_fidelity": { "const": true },
+        "identity": { "const": true },
+        "procedure": { "const": true },
+        "coverage": { "const": true },
+        "public_sources": { "const": true },
+        "reuse": { "const": true },
+        "privacy": { "const": true },
+        "comparability": { "const": true },
+        "citations": { "const": true },
+        "counterevidence": { "const": true }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "snapshot_sha256", "signature"],
+      "properties": {
+        "algorithm": { "const": "ed25519" },
+        "key_id": { "$ref": "#/$defs/id" },
+        "snapshot_sha256": { "$ref": "#/$defs/sha256" },
+        "signature": { "type": "string", "contentEncoding": "base64" }
+      }
+    },
+    "suspension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason_code", "reason_public"],
+      "properties": {
+        "reason_code": { "$ref": "#/$defs/id" },
+        "reason_public": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_type", "record_id", "revision", "sequence", "operation", "publication_circuit", "is_test", "controls", "data"],
+      "properties": {
+        "record_type": {
+          "enum": ["person", "organization", "mandate", "affiliation", "theme", "dossier", "source", "text", "text_version", "article", "text_theme", "scrutin", "vote", "coverage", "comparison"]
+        },
+        "record_id": { "$ref": "#/$defs/id" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "sequence": { "type": "integer", "minimum": 1 },
+        "operation": { "enum": ["upsert", "suspend", "resume"] },
+        "publication_circuit": { "enum": ["factual", "analysis"] },
+        "is_test": { "type": "boolean" },
+        "controls": { "$ref": "#/$defs/controls" },
+        "data": { "type": "object" },
+        "review": { "oneOf": [{ "$ref": "#/$defs/review" }, { "type": "null" }] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "record_type": { "const": "comparison" } }, "required": ["record_type"] },
+          "then": {
+            "properties": {
+              "publication_circuit": { "const": "analysis" },
+              "controls": { "required": ["comparability", "citations", "counterevidence"] }
+            },
+            "required": ["review"]
+          },
+          "else": { "properties": { "publication_circuit": { "const": "factual" }, "review": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "operation": { "enum": ["suspend", "resume"] } }, "required": ["operation"] },
+          "then": { "properties": { "record_type": { "enum": ["text", "scrutin", "comparison"] } } }
+        },
+        {
+          "if": { "properties": { "operation": { "const": "suspend" } }, "required": ["operation"] },
+          "then": { "properties": { "data": { "$ref": "#/$defs/suspension" } } }
+        },
+        { "$ref": "#/$defs/dataByType" }
+      ]
+    },
+    "dataByType": {
+      "allOf": [
+        { "if": { "properties": { "record_type": { "const": "person" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/person" } } } },
+        { "if": { "properties": { "record_type": { "const": "organization" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/organization" } } } },
+        { "if": { "properties": { "record_type": { "const": "mandate" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/mandate" } } } },
+        { "if": { "properties": { "record_type": { "const": "affiliation" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/affiliation" } } } },
+        { "if": { "properties": { "record_type": { "const": "theme" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/theme" } } } },
+        { "if": { "properties": { "record_type": { "const": "dossier" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/dossier" } } } },
+        { "if": { "properties": { "record_type": { "const": "source" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/source" } } } },
+        { "if": { "properties": { "record_type": { "const": "text" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/textRecord" } } } },
+        { "if": { "properties": { "record_type": { "const": "text_version" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/textVersion" } } } },
+        { "if": { "properties": { "record_type": { "const": "article" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/article" } } } },
+        { "if": { "properties": { "record_type": { "const": "text_theme" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/textTheme" } } } },
+        { "if": { "properties": { "record_type": { "const": "scrutin" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/scrutin" } } } },
+        { "if": { "properties": { "record_type": { "const": "vote" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/vote" } } } },
+        { "if": { "properties": { "record_type": { "const": "coverage" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/coverage" } } } },
+        { "if": { "properties": { "record_type": { "const": "comparison" }, "operation": { "enum": ["upsert", "resume"] } }, "required": ["record_type", "operation"] }, "then": { "properties": { "data": { "$ref": "#/$defs/comparison" } } } }
+      ]
+    },
+    "person": {
+      "type": "object", "additionalProperties": false, "required": ["slug", "display_name", "sort_name"],
+      "properties": { "slug": { "$ref": "#/$defs/id" }, "display_name": { "$ref": "#/$defs/text" }, "sort_name": { "$ref": "#/$defs/text" }, "aliases": { "type": "array", "items": { "$ref": "#/$defs/text" }, "uniqueItems": true }, "biography": { "type": ["string", "null"], "maxLength": 10000 }, "public_status": { "$ref": "#/$defs/status" } }
+    },
+    "organization": {
+      "type": "object", "additionalProperties": false, "required": ["type", "slug", "name"],
+      "properties": { "type": { "enum": ["group", "party", "institution"] }, "slug": { "$ref": "#/$defs/id" }, "name": { "$ref": "#/$defs/text" }, "short_name": { "type": ["string", "null"], "maxLength": 100 }, "aliases": { "type": "array", "items": { "$ref": "#/$defs/text" }, "uniqueItems": true }, "description": { "type": ["string", "null"], "maxLength": 10000 }, "official_url": { "oneOf": [{ "$ref": "#/$defs/url" }, { "type": "null" }] }, "public_status": { "$ref": "#/$defs/status" } }
+    },
+    "mandate": {
+      "type": "object", "additionalProperties": false, "required": ["person_external_id", "institution_external_id", "title", "starts_on"],
+      "properties": { "person_external_id": { "$ref": "#/$defs/id" }, "institution_external_id": { "$ref": "#/$defs/id" }, "title": { "$ref": "#/$defs/text" }, "chamber": { "type": ["string", "null"] }, "legislature": { "type": ["string", "null"] }, "starts_on": { "$ref": "#/$defs/date" }, "ends_on": { "oneOf": [{ "$ref": "#/$defs/date" }, { "type": "null" }] } }
+    },
+    "affiliation": {
+      "type": "object", "additionalProperties": false, "required": ["person_external_id", "organization_external_id", "starts_on"],
+      "properties": { "person_external_id": { "$ref": "#/$defs/id" }, "organization_external_id": { "$ref": "#/$defs/id" }, "role": { "type": ["string", "null"] }, "starts_on": { "$ref": "#/$defs/date" }, "ends_on": { "oneOf": [{ "$ref": "#/$defs/date" }, { "type": "null" }] }, "source_external_id": { "oneOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }] } }
+    },
+    "theme": {
+      "type": "object", "additionalProperties": false, "required": ["slug", "name"],
+      "properties": { "slug": { "$ref": "#/$defs/id" }, "name": { "$ref": "#/$defs/text" }, "description": { "type": ["string", "null"] }, "public_status": { "$ref": "#/$defs/status" } }
+    },
+    "dossier": {
+      "type": "object", "additionalProperties": false, "required": ["slug", "title", "summary", "status_label"],
+      "properties": { "slug": { "$ref": "#/$defs/id" }, "title": { "$ref": "#/$defs/text" }, "short_title": { "type": ["string", "null"] }, "summary": { "$ref": "#/$defs/text" }, "status_label": { "$ref": "#/$defs/text" }, "official_url": { "oneOf": [{ "$ref": "#/$defs/url" }, { "type": "null" }] }, "public_status": { "$ref": "#/$defs/status" } }
+    },
+    "source": {
+      "type": "object", "additionalProperties": false, "required": ["source_type", "title", "public_url", "exact_version"],
+      "properties": { "source_type": { "$ref": "#/$defs/text" }, "title": { "$ref": "#/$defs/text" }, "public_url": { "$ref": "#/$defs/url" }, "exact_version": { "$ref": "#/$defs/text" }, "byte_sha256": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] }, "availability": { "enum": ["available", "unavailable", "unchecked"] }, "checked_at": { "oneOf": [{ "$ref": "#/$defs/datetime" }, { "type": "null" }] } }
+    },
+    "textRecord": {
+      "type": "object", "additionalProperties": false, "required": ["dossier_external_id", "slug", "official_title", "short_title", "summary", "status_label", "official_url"],
+      "properties": { "dossier_external_id": { "$ref": "#/$defs/id" }, "slug": { "$ref": "#/$defs/id" }, "official_title": { "$ref": "#/$defs/text" }, "short_title": { "$ref": "#/$defs/text" }, "summary": { "$ref": "#/$defs/text" }, "status_label": { "$ref": "#/$defs/text" }, "official_url": { "$ref": "#/$defs/url" }, "full_text": { "type": ["string", "null"], "maxLength": 200000 }, "public_status": { "$ref": "#/$defs/status" } }
+    },
+    "textVersion": {
+      "type": "object", "additionalProperties": false, "required": ["text_external_id", "institution_external_id", "version_label", "stage", "occurred_on", "official_url", "source_external_id"],
+      "properties": { "text_external_id": { "$ref": "#/$defs/id" }, "institution_external_id": { "$ref": "#/$defs/id" }, "version_label": { "$ref": "#/$defs/text" }, "stage": { "$ref": "#/$defs/text" }, "occurred_on": { "$ref": "#/$defs/date" }, "official_url": { "$ref": "#/$defs/url" }, "source_external_id": { "$ref": "#/$defs/id" }, "source_checksum": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] }, "excerpt": { "type": ["string", "null"] }, "public_status": { "$ref": "#/$defs/status" } }
+    },
+    "article": {
+      "type": "object", "additionalProperties": false, "required": ["text_version_external_id", "reference_label", "official_url"],
+      "properties": { "text_version_external_id": { "$ref": "#/$defs/id" }, "reference_label": { "$ref": "#/$defs/text" }, "title": { "type": ["string", "null"] }, "summary": { "type": ["string", "null"] }, "official_url": { "$ref": "#/$defs/url" }, "public_status": { "$ref": "#/$defs/status" } }
+    },
+    "textTheme": {
+      "type": "object", "additionalProperties": false, "required": ["text_external_id", "theme_external_id", "scope_kind", "reason"],
+      "properties": { "text_external_id": { "$ref": "#/$defs/id" }, "theme_external_id": { "$ref": "#/$defs/id" }, "scope_kind": { "enum": ["text", "article", "amendment"] }, "scope_external_id": { "oneOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }] }, "reason": { "$ref": "#/$defs/text" } },
+      "allOf": [{ "if": { "properties": { "scope_kind": { "enum": ["article", "amendment"] } }, "required": ["scope_kind"] }, "then": { "required": ["scope_external_id"], "properties": { "scope_external_id": { "$ref": "#/$defs/id" } } } }]
+    },
+    "scrutin": {
+      "type": "object", "additionalProperties": false, "required": ["text_version_external_id", "institution_external_id", "legislature", "session_label", "ballot_number", "occurred_at", "stage", "result_label", "official_url", "nominative_status", "coverage_label", "source_external_id"],
+      "properties": { "text_version_external_id": { "$ref": "#/$defs/id" }, "institution_external_id": { "$ref": "#/$defs/id" }, "legislature": { "$ref": "#/$defs/text" }, "session_label": { "$ref": "#/$defs/text" }, "ballot_number": { "$ref": "#/$defs/text" }, "occurred_at": { "$ref": "#/$defs/datetime" }, "stage": { "$ref": "#/$defs/text" }, "result_label": { "$ref": "#/$defs/text" }, "official_url": { "$ref": "#/$defs/url" }, "nominative_status": { "enum": ["available", "partial", "not_available"] }, "count_for": { "type": ["integer", "null"], "minimum": 0 }, "count_against": { "type": ["integer", "null"], "minimum": 0 }, "count_abstention": { "type": ["integer", "null"], "minimum": 0 }, "coverage_label": { "$ref": "#/$defs/text" }, "source_external_id": { "$ref": "#/$defs/id" }, "public_status": { "$ref": "#/$defs/status" } }
+    },
+    "vote": {
+      "type": "object", "additionalProperties": false, "required": ["scrutin_external_id", "person_external_id", "position", "recorded_at", "source_external_id"],
+      "properties": { "scrutin_external_id": { "$ref": "#/$defs/id" }, "person_external_id": { "$ref": "#/$defs/id" }, "position": { "enum": ["for", "against", "abstention", "non_voting", "not_recorded"] }, "group_external_id_at_vote": { "oneOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }] }, "recorded_at": { "$ref": "#/$defs/datetime" }, "source_external_id": { "$ref": "#/$defs/id" } }
+    },
+    "coverage": {
+      "type": "object", "additionalProperties": false, "required": ["scope_type", "scope_external_id", "starts_on", "label", "details"],
+      "properties": { "scope_type": { "$ref": "#/$defs/text" }, "scope_external_id": { "$ref": "#/$defs/id" }, "starts_on": { "$ref": "#/$defs/date" }, "ends_on": { "oneOf": [{ "$ref": "#/$defs/date" }, { "type": "null" }] }, "label": { "$ref": "#/$defs/text" }, "details": { "$ref": "#/$defs/text" }, "public_status": { "$ref": "#/$defs/status" } }
+    },
+    "comparison": {
+      "type": "object", "additionalProperties": false, "required": ["slug", "title", "declaration_quote", "declaration_date", "author_person_external_id", "short_answer", "main_caveat", "reasoning", "result_code", "method_version", "source_external_ids", "scrutin_external_ids", "reviewed_at"],
+      "properties": { "slug": { "$ref": "#/$defs/id" }, "title": { "$ref": "#/$defs/text" }, "declaration_quote": { "$ref": "#/$defs/text" }, "declaration_date": { "$ref": "#/$defs/date" }, "author_person_external_id": { "$ref": "#/$defs/id" }, "short_answer": { "$ref": "#/$defs/text" }, "main_caveat": { "$ref": "#/$defs/text" }, "reasoning": { "$ref": "#/$defs/text" }, "result_code": { "enum": ["convergence", "divergence", "evolution", "mixed", "not_comparable", "inconclusive"] }, "method_version": { "$ref": "#/$defs/text" }, "source_external_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } }, "scrutin_external_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } }, "reviewed_at": { "$ref": "#/$defs/datetime" }, "public_status": { "$ref": "#/$defs/status" } }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "classification": "synthetic_test_only_never_human_review",
+  "bundle": {
+    "format": "dv.full-review/0.1.0-draft.1",
+    "record_id": "TEST-FULL-REVIEW",
+    "record_revision": 1,
+    "environment": "test",
+    "destination": "dv-site:test",
+    "content_kind": "speech_vote",
+    "data_scope": "synthetic",
+    "snapshot_digest": "3981c87584cae134a2da95f4bb60d21d502e1c577579891894221a39c43177bb",
+    "public": {
+      "title": "FIXTURE UNIQUEMENT — contenu intégral",
+      "evidence": [
+        {
+          "exact_quote": "Citation fictive."
+        }
+      ],
+      "counterevidence": [
+        {
+          "statement": "Contre-élément fictif."
+        }
+      ],
+      "catalogue": {
+        "persons": [
+          {
+            "id": "TEST-PERSON",
+            "display_name": "Personne fictive"
+          }
+        ]
+      }
+    },
+    "source_versions": [
+      {
+        "source_id": "TEST-SOURCE",
+        "version_id": "TEST-1",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "public_url": "https://example.org/fixture"
+      }
+    ],
+    "method_version": "TEST-NOT-POLITICAL"
+  },
+  "proof": {
+    "statement": {
+      "algorithm": "ed25519",
+      "key_id": "test-full-review-fixture",
+      "bundle_sha256": "f7b8281f79a83052ac3b7eeabe3d85b7d712225250935857c80300cee307f970",
+      "record_id": "TEST-FULL-REVIEW",
+      "record_revision": 1,
+      "decision": "approve",
+      "reviewed_at": "2026-09-13T22:00:00Z"
+    },
+    "signature": "VOm/L2sTJZn/hUaqZMuPVjLCqdJ0mQAgTNa+QpPUbjCLcuidLMIOD241g5tA2DZSdsxWcOkkbBReUEchbNKXCw=="
+  },
+  "public_key_base64": "chMYj2kZLx5VAFMir7oywO1cI9oP42eHOW+dmd1yDSY=",
+  "message_utf8": "DV-FULL-REVIEW-ED25519-V1\n{\"algorithm\":\"ed25519\",\"bundle_sha256\":\"f7b8281f79a83052ac3b7eeabe3d85b7d712225250935857c80300cee307f970\",\"decision\":\"approve\",\"key_id\":\"test-full-review-fixture\",\"record_id\":\"TEST-FULL-REVIEW\",\"record_revision\":1,\"reviewed_at\":\"2026-09-13T22:00:00Z\"}",
+  "python_verification": {
+    "verified_detached_signature": true,
+    "bundle_sha256": "f7b8281f79a83052ac3b7eeabe3d85b7d712225250935857c80300cee307f970",
+    "statement_sha256": "77f5fc4bfa3b8de012190c9f5c50edd86fd389faf4ec84e88cf1177f448a6b47",
+    "record_id": "TEST-FULL-REVIEW",
+    "record_revision": 1,
+    "key_id": "test-full-review-fixture",
+    "send_authorized": false,
+    "publication_authorized": false,
+    "site_adoption_required": true
+  }
+}

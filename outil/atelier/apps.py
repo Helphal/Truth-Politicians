@@ -1,0 +1,10 @@
+from django.apps import AppConfig
+
+
+class AtelierConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'atelier'
+    verbose_name = "Atelier éditorial"
+
+    def ready(self):
+        from . import verification_signals  # noqa: F401

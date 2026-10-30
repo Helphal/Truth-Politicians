@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ entry.title }}{% endblock %}
+{% block content %}
+<header class="page-header">
+  <p class="eyebrow">{{ entry.get_institution_display }} · {{ entry.role_or_procedure }}</p>
+  <h1>{{ entry.title }}</h1>
+  <p class="lede">{{ entry.short_text }}</p>
+</header>
+<article class="prose">
+  <p>{{ entry.detailed_text }}</p>
+  <h2>Sources officielles</h2>
+  <ul>
+    {% for src in entry.official_sources %}
+    <li><a href="{{ src.url }}" rel="noopener noreferrer">{{ src.label }}</a></li>
+    {% endfor %}
+  </ul>
+  <h2>Limites et variantes</h2>
+  <p>{{ entry.limits_and_variants }}</p>
+  <p class="muted">Vérifié le {{ entry.verified_on|default:"—" }} · stable_id={{ entry.stable_id }} · version={{ entry.version }}</p>
+</article>
+<p><a href="{% url 'explain_index' %}">Retour aux fiches</a></p>
+{% endblock %}

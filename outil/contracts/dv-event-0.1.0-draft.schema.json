@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:truth-politicians:event:0.1.0-draft",
+  "title": "Paquet candidat Atelier vers récepteur Site — non accepté par le Site",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "sequence",
+    "operation",
+    "record_id",
+    "record_revision",
+    "payload_digest",
+    "payload",
+    "signature_algorithm",
+    "signature"
+  ],
+  "properties": {
+    "event_id": {"type": "string", "format": "uuid"},
+    "sequence": {"type": "integer", "minimum": 1},
+    "operation": {"enum": ["upsert", "suspend"]},
+    "record_id": {"$ref": "#/$defs/stableId"},
+    "record_revision": {"type": "integer", "minimum": 1},
+    "payload_digest": {"$ref": "#/$defs/sha256"},
+    "payload": {"type": "object"},
+    "signature_algorithm": {"const": "HMAC-SHA256"},
+    "signature": {"$ref": "#/$defs/sha256"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"operation": {"const": "upsert"}}, "required": ["operation"]},
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["schema_version", "record_id", "record_revision", "content_kind", "authorization"]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["schema_version", "record_id", "record_revision", "operation", "public_reason"],
+            "properties": {
+              "schema_version": {"const": "dv.content/0.4.0-draft.2"},
+              "record_id": {"$ref": "#/$defs/stableId"},
+              "record_revision": {"type": "integer", "minimum": 1},
+              "operation": {"const": "suspend"},
+              "public_reason": {"type": "string", "minLength": 1, "maxLength": 1000}
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 220,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

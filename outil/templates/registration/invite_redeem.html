@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Invitation{% endblock %}
+{% block content %}
+<section class="narrow">
+  <h1>Activer une invitation</h1>
+  <p class="lede">Saisissez le jeton à usage unique et définissez votre mot de passe. Aucun fournisseur d’identité externe.</p>
+  <form method="post" autocomplete="off">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Activer le compte</button>
+  </form>
+</section>
+{% endblock %}

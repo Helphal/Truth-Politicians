@@ -1,0 +1,1 @@
+{% for field in fields %}<dt>{{ field.label }}</dt><dd>{% if field.url %}<a href="{{ field.url }}" rel="noreferrer noopener">{{ field.text }}</a>{% else %}{{ field.text }}{% endif %}</dd>{% endfor %}

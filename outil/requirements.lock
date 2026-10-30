@@ -1,0 +1,18 @@
+# Versions du candidat ; Django 5.2.18 et Gunicorn 25.3.0 actualisés le 2026-10-18.
+# Pour une installation vérifiée par hashes, employer le verrou de qualification adapté.
+# Installation sans service payant : python -m pip install -r requirements.lock
+asgiref==3.12.1
+attrs==26.1.0
+Django==5.2.18
+gunicorn==25.3.0
+packaging==24.2
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+referencing==0.37.0
+rpds-py==2026.6.3
+sqlparse==0.6.0
+typing_extensions==4.16.0
+tzdata==2026.4
+cryptography==50.0.1
+cffi==2.1.1
+pycparser==3.0

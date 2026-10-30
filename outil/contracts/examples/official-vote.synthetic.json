@@ -1,0 +1,58 @@
+{
+  "schema_version": "dv.content/0.4.0-draft.2",
+  "policy_version": "DV-PUB-2",
+  "record_id": "EXAMPLE:OFFICIAL-VOTE:1",
+  "record_revision": 1,
+  "content_kind": "official_vote",
+  "data_scope": "synthetic",
+  "method_version": null,
+  "source_versions": [
+    {
+      "source_id": "EXAMPLE:SOURCE:VOTE",
+      "version_id": "v1-test",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "public_url": "https://example.invalid/source/vote"
+    }
+  ],
+  "public": {
+    "institution": "Institution fictive",
+    "legislature": "test",
+    "session": "test",
+    "official_title": "Scrutin fictif de validation",
+    "scrutin_id": "EXAMPLE:SCRUTINY:1",
+    "occurred_on": "2024-01-02",
+    "date_precision": "day",
+    "procedure": "scrutin fictif",
+    "stage": "version fictive soumise",
+    "result_status": "adopted",
+    "official_text_url": "https://example.invalid/text/1",
+    "official_vote_url": "https://example.invalid/vote/1",
+    "text_reference_role": "submitted",
+    "nominative_status": "available",
+    "counts": {
+      "registered": {"state": "unknown", "value": null, "reason": "Non défini dans la fixture."},
+      "voters": {"state": "known", "value": 3},
+      "expressed": {"state": "known", "value": 2},
+      "for": {"state": "known", "value": 1},
+      "against": {"state": "known", "value": 1},
+      "abstention": {"state": "known", "value": 1}
+    },
+    "coverage": {
+      "period_start": "2024-01-02",
+      "period_end": "2024-01-02",
+      "expected_state": "unknown",
+      "expected_count": null,
+      "retrieved_count": 1,
+      "normalized_count": 1,
+      "publishable_count": 1,
+      "exclusions": ["Fixture synthétique, aucune couverture réelle."],
+      "statement": "Exemple de contrat seulement."
+    },
+    "themes": []
+  },
+  "authorization": {
+    "route": "automatic_checked",
+    "snapshot_digest": "1269c93b8cb95485a8290e9113c7a38aeddcd1d4ee30c5ff78feb244b800c379",
+    "public_review": {"nature": "controles_automatiques"}
+  }
+}

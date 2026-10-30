@@ -1,0 +1,81 @@
+{
+  "schema_version": "dv.content/0.4.0-draft.3",
+  "policy_version": "DV-PUB-3",
+  "record_id": "SYNTHETIC:official_vote",
+  "record_revision": 1,
+  "content_kind": "official_vote",
+  "data_scope": "synthetic",
+  "method_version": null,
+  "source_versions": [
+    {
+      "source_id": "SYNTHETIC:SOURCE",
+      "version_id": "fixture-v1",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "public_url": "https://www.assemblee-nationale.fr/fixture-test-only"
+    }
+  ],
+  "public": {
+    "institution": "Assemblée nationale",
+    "legislature": "16",
+    "session": "2023-2024",
+    "official_title": "Vote officiel",
+    "scrutin_id": "AN:16:SCRUTIN:3289",
+    "occurred_on": "2024-01-30",
+    "date_precision": "day",
+    "procedure": "scrutin public solennel",
+    "stage": "première lecture, version soumise",
+    "result_status": "adopted",
+    "official_text_url": "https://www.assemblee-nationale.fr/dyn/16/textes/l16b1983_projet-loi",
+    "official_vote_url": "https://www.assemblee-nationale.fr/dyn/16/scrutins/3289",
+    "text_reference_role": "submitted",
+    "nominative_status": "available",
+    "counts": {
+      "registered": {
+        "state": "unknown",
+        "value": null,
+        "reason": "non publié par la source"
+      },
+      "voters": {
+        "state": "known",
+        "value": 3
+      },
+      "expressed": {
+        "state": "known",
+        "value": 2
+      },
+      "for": {
+        "state": "known",
+        "value": 1
+      },
+      "against": {
+        "state": "known",
+        "value": 1
+      },
+      "abstention": {
+        "state": "known",
+        "value": 1
+      }
+    },
+    "coverage": {
+      "period_start": "2024-01-01",
+      "period_end": "2024-01-01",
+      "expected_state": "unknown",
+      "expected_count": null,
+      "retrieved_count": 1,
+      "normalized_count": 1,
+      "publishable_count": 1,
+      "exclusions": [
+        "lot de test borné"
+      ],
+      "statement": "Aucune exhaustivité revendiquée."
+    },
+    "themes": []
+  },
+  "authorization": {
+    "route": "automatic_checked",
+    "snapshot_digest": "0c73b57b3c6cb86a16e24b60667677851b8250c83b7044404b2108a95765c064",
+    "public_review": {
+      "nature": "controles_automatiques"
+    }
+  }
+}

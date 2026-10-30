@@ -1,0 +1,8 @@
+# Préserver les octets couverts par les empreintes des contrats et vecteurs.
+# Git continue de présenter les différences des fichiers texte.
+* -text
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.woff binary
+*.woff2 binary

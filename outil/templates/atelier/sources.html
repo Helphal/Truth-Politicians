@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Sources et couverture{% endblock %}
+{% block content %}
+<header class="page-header"><p class="eyebrow">Provenance</p><h1>Sources et couverture</h1><p class="lede">Ce que l’atelier connaît réellement : origine, droits, période observée et dernier état d’acquisition.</p></header>
+<form method="get" class="filters">
+  <label>Recherche <input name="q" value="{{ query }}"></label>
+  <label>État
+    <select name="status">
+      <option value="">Tous</option><option value="candidate">À qualifier</option><option value="qualified">Qualifiée</option><option value="active">Active</option><option value="blocked">Bloquée</option>
+    </select>
+  </label>
+  <button type="submit">Filtrer</button>
+</form>
+<div class="table-wrap"><table><thead><tr><th>Source</th><th>Famille</th><th>État</th><th>Droits</th><th>Couverture observée</th><th>Dernier succès</th><th>Dernier échec</th></tr></thead><tbody>
+    {% for source in page %}<tr><td><strong>{{ source.producer }}</strong><br><code>{{ source.stable_id }}</code></td><td>{{ source.family }}</td><td>{{ source.get_access_status_display }}</td><td>{{ source.get_rights_status_display }}</td><td>{% if source.latest_coverage %}{{ source.latest_coverage.period_start }} → {{ source.latest_coverage.period_end }}<br>{{ source.latest_coverage.retrieved_count }} récupéré(s), {{ source.latest_coverage.normalized_count }} normalisé(s)<br>Attendus : {% if source.latest_coverage.expected_state == 'known' %}{{ source.latest_coverage.expected_count }}{% else %}non établis{% endif %}{% else %}Non mesurée{% endif %}</td><td>{{ source.last_success_at|default:"—" }}</td><td>{{ source.last_failure_code|default:"—" }}</td></tr>{% empty %}<tr><td colspan="7">Aucune source.</td></tr>{% endfor %}
+</tbody></table></div>
+{% include "atelier/_pagination.html" %}
+{% endblock %}

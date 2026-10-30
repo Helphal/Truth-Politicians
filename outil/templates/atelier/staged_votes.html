@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Archives indexées, non publiables{% endblock %}
+{% block content %}
+<header class="page-header"><p class="eyebrow">Zone de préparation</p><h1>Archives indexées</h1><p class="lede">Des relevés retrouvables, mais pas encore qualifiés comme dossiers publiables.</p></header>
+<p class="notice notice--danger"><strong>Qualification en attente.</strong> Les textes exacts doivent être raccordés et les contrôles exécutés. Aucun texte législatif fictif n’a été créé.</p>
+<ul>{% for scan in scans %}<li>{{ scan.document.source.stable_id }} : {{ scan.cursor }}/{{ scan.total_members }} fichiers indexés{% if scan.completed %}, archive parcourue{% endif %}. Cela ne mesure pas une couverture officielle exhaustive depuis 2022.</li>{% endfor %}</ul>
+<form method="get"><label for="query">Titre ou identifiant institutionnel</label><input id="query" name="q" value="{{ query }}" maxlength="500"><button type="submit">Filtrer</button></form>
+{% for row in page %}<article><h2>{{ row.normalized.official_title }}</h2><p><code>{{ row.source_uid }}</code> · {{ row.institution }} · {{ row.normalized.occurred_on }}</p><p>{{ row.normalized.procedure_label }} · {{ row.normalized.observations_count }} observations dans le fichier source. État : texte exact non raccordé.</p>{% if row.correction_reason %}<p>Rapprochement : {{ row.correction_reason }}. Ancien objet conservé ; aucune autorisation réutilisée.</p>{% endif %}<details><summary>Provenance du relevé</summary><p>{{ row.document.source.stable_id }} · {{ row.locator }} · <code>{{ row.raw_sha256 }}</code></p></details></article>{% empty %}<p>Aucun relevé correspondant dans les archives indexées.</p>{% endfor %}
+<nav aria-label="Pages des relevés">{% if page.has_previous %}<a href="?q={{ query|urlencode }}&amp;page={{ page.previous_page_number }}">Précédente</a>{% endif %} Page {{ page.number }} sur {{ page.paginator.num_pages }} {% if page.has_next %}<a href="?q={{ query|urlencode }}&amp;page={{ page.next_page_number }}">Suivante</a>{% endif %}</nav>
+{% endblock %}

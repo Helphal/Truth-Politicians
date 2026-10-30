@@ -1,0 +1,39 @@
+{
+  "schema_version": "dv.content/0.4.0-draft.1",
+  "record_id": "FIXTURE-NON-PUBLIABLE-001",
+  "record_revision": 1,
+  "content_kind": "vote_comparison",
+  "policy_version": "DV-PUB-1",
+  "method_version": "M0.1-test",
+  "data_scope": "synthetic",
+  "source_versions": [
+    {
+      "source_id": "S-TEXT",
+      "version": "fixture-v1",
+      "public_url": "https://example.org/fixtures/text-not-fetched"
+    },
+    {
+      "source_id": "S-VOTE",
+      "version": "fixture-v1",
+      "public_url": "https://example.org/fixtures/vote-not-fetched"
+    },
+    {
+      "source_id": "S-SPEECH",
+      "version": "fixture-v1",
+      "public_url": "https://example.org/fixtures/speech-not-fetched"
+    }
+  ],
+  "public": {
+    "rule_id": "PAIR_EQUAL_KNOWN_V1",
+    "scope": "Univers fictif de test",
+    "observations": [
+      {
+        "scrutin_id": "TEST-SCRUTIN-1",
+        "left": "for",
+        "right": "for",
+        "official_text_url": "https://example.org/fixtures/text-not-fetched",
+        "official_vote_url": "https://example.org/fixtures/vote-not-fetched"
+      }
+    ]
+  }
+}

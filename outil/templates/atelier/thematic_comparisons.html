@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% block title %}Parole et votes{% endblock %}
+{% block content %}
+<header class="page-header page-header--split">
+  <div>
+    <p class="eyebrow">Comparateur documentaire</p>
+    <h1>De la parole publique aux actes</h1>
+    <p class="lede">Reliez une position publique à ce qu’une mesure change réellement, puis aux votes nominatifs qui ont fait avancer ou bloquer cette mesure.</p>
+  </div>
+  <div class="page-header__meta"><span class="status-pill status-pill--ok">Calcul local</span><span class="status-pill">Aucune conclusion automatique publiée</span>{% if can_qualify %}<a class="button button--secondary" href="{% url 'thematic_qualification' %}">Qualifier les relations</a>{% endif %}</div>
+</header>
+
+<ol class="evidence-flow" aria-label="Chaîne de comparaison">
+  <li><span>1</span><strong>Parole</strong><small>Presse, vidéo, réseau social, discours…</small></li>
+  <li><span>2</span><strong>Mesure</strong><small>Effet concret et texte officiel</small></li>
+  <li><span>3</span><strong>Scrutin</strong><small>Effet exact du vote</small></li>
+  <li><span>4</span><strong>Position</strong><small>Vote nominatif, sans déduction d’absence</small></li>
+</ol>
+
+<nav class="direction-switch" aria-label="Sens de recherche">
+  <a href="?mode=speech"{% if mode == "speech" %} aria-current="page"{% endif %}>
+    <span class="direction-switch__icon" aria-hidden="true">“</span>
+    <span><strong>Partir d’une parole</strong><small>Que montrent ensuite les mesures et les votes ?</small></span>
+  </a>
+  <a href="?mode=law"{% if mode == "law" %} aria-current="page"{% endif %}>
+    <span class="direction-switch__icon" aria-hidden="true">§</span>
+    <span><strong>Partir d’une loi</strong><small>Qui s’est exprimé, et comment a-t-il voté ?</small></span>
+  </a>
+</nav>
+
+<section class="explorer-panel">
+  <div class="explorer-panel__heading">
+    <div><p class="eyebrow">{% if mode == "speech" %}Recherche par parole{% else %}Recherche inversée{% endif %}</p><h2>{% if mode == "speech" %}Retrouver une déclaration publique{% else %}Retrouver une mesure concrète{% endif %}</h2></div>
+    <span class="corpus-count">{% if mode == "speech" %}{{ declaration_count }} déclaration{{ declaration_count|pluralize }}{% else %}{{ measure_count }} mesure{{ measure_count|pluralize }}{% endif %} dans la base locale</span>
+  </div>
+  <form method="get" class="explorer-search" role="search">
+    <input type="hidden" name="mode" value="{{ mode }}">
+    <label for="thematic-query">{% if mode == "speech" %}Personne, sujet ou mots de la déclaration{% else %}Sujet, effet concret ou titre du texte{% endif %}
+      <input id="thematic-query" name="q" value="{{ query }}" minlength="2" maxlength="300" required placeholder="{% if mode == 'speech' %}Ex. pouvoir d’achat, salaires, Marine Le Pen{% else %}Ex. revalorisation du SMIC{% endif %}">
+    </label>
+    <div class="explorer-filters" aria-label="Filtres visibles">
+      {% if mode == "law" %}
+      <label for="filter-institution">Institution
+        <input id="filter-institution" name="institution" value="{{ institution }}" maxlength="120" placeholder="Assemblée, Sénat…">
+      </label>
+      {% endif %}
+      <label for="filter-from">Du
+        <input id="filter-from" type="date" name="from" value="{{ date_from }}">
+      </label>
+      <label for="filter-to">Au
+        <input id="filter-to" type="date" name="to" value="{{ date_to }}">
+      </label>
+    </div>
+    <button type="submit">Rechercher</button>
+  </form>
+  <p class="scope-note">La recherche retrouve des éléments du corpus. Une comparaison n’apparaît que si les deux relations — parole → mesure et mesure → scrutin — ont été qualifiées avec leurs preuves. Les filtres bornent uniquement le corpus local déjà matérialisé.</p>
+</section>
+
+{% if error %}<p class="notice notice--danger" role="alert">{{ error }}</p>{% endif %}
+
+{% if matches %}
+<section aria-labelledby="matches-title">
+  <div class="section-heading"><div><p class="eyebrow">Résultats locaux</p><h2 id="matches-title">Choisir l’élément de départ</h2></div><span class="status-pill">{% if pagination %}{{ pagination.returned }} / {{ pagination.total }}{% else %}{{ matches|length }}{% endif %}</span></div>
+  {% if search_meta %}<p class="scope-note">{{ search_meta.coverage }}</p>{% endif %}
+  <div class="candidate-list">
+    {% for item in matches %}
+    <article class="candidate-card">
+      {% if mode == "speech" %}
+      <div class="candidate-card__meta"><span class="source-chip">{{ item.source.medium_label }}</span><span>{{ item.occurred_on|date:"j F Y"|default:"Date inconnue" }}</span>{% if item.position_scope_label %}<span class="source-chip">{{ item.position_scope_label }}</span>{% endif %}</div>
+      <h3>{{ item.speaker }}</h3><p class="candidate-card__capacity">{{ item.capacity }}</p><blockquote>{{ item.quote }}</blockquote>
+      <div class="candidate-card__footer"><span>{{ item.qualified_relations }} mesure{{ item.qualified_relations|pluralize }} qualifiée{{ item.qualified_relations|pluralize }}</span><a class="button button--secondary" href="?mode=speech&amp;declaration={{ item.pk }}">Voir les actes reliés</a></div>
+      {% else %}
+      <div class="candidate-card__meta"><span class="source-chip">Texte officiel</span><span>{{ item.dossier_title }}</span>{% if item.institution %}<span>{{ item.institution }}</span>{% endif %}</div>
+      <h3>{{ item.title }}</h3><p>{{ item.plain_summary|default:"Résumé en langage clair à qualifier." }}</p>
+      {% if item.concrete_effect %}<p class="effect-line"><strong>Effet concret :</strong> {{ item.concrete_effect }}</p>{% endif %}
+      <div class="candidate-card__footer"><span>{{ item.qualified_declarations }} parole{{ item.qualified_declarations|pluralize }} · {{ item.qualified_scrutinies }} scrutin{{ item.qualified_scrutinies|pluralize }}</span><a class="button button--secondary" href="?mode=law&amp;measure={{ item.pk }}">Voir paroles et votes</a></div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% if pagination and pagination.has_more or pagination.previous_offset != None %}
+  <nav class="pager" aria-label="Pagination des candidats">
+    {% if pagination.previous_offset != None %}<a href="?mode={{ mode }}&amp;q={{ query|urlencode }}&amp;institution={{ institution|urlencode }}&amp;from={{ date_from }}&amp;to={{ date_to }}&amp;limit={{ pagination.limit }}&amp;offset={{ pagination.previous_offset }}">Précédent</a>{% endif %}
+    <span>Offset {{ pagination.offset }} · limite {{ pagination.limit }}</span>
+    {% if pagination.has_more %}<a href="?mode={{ mode }}&amp;q={{ query|urlencode }}&amp;institution={{ institution|urlencode }}&amp;from={{ date_from }}&amp;to={{ date_to }}&amp;limit={{ pagination.limit }}&amp;offset={{ pagination.next_offset }}">Suivant</a>{% endif %}
+  </nav>
+  {% endif %}
+</section>
+{% elif query and not result and not error %}
+<section class="empty-state"><span aria-hidden="true">⌕</span><h2>Aucun élément retrouvé</h2><p>Ce résultat ne prouve pas l’absence de déclaration ou de mesure. Il décrit uniquement le corpus local matérialisé.</p><a href="{% url 'documentary_search' %}?q={{ query|urlencode }}">Élargir la recherche documentaire</a></section>
+{% endif %}
+
+{% if result %}
+<section class="comparison-hero" aria-labelledby="comparison-title">
+  <div>
+    <p class="eyebrow">Comparaison qualifiée</p>
+    <h2 id="comparison-title">{% if result.direction == "speech_to_votes" %}{{ result.subject.speaker }}{% else %}{{ result.subject.title }}{% endif %}</h2>
+    {% if result.direction == "speech_to_votes" %}
+    <blockquote>{{ result.subject.quote }}</blockquote>
+    {% if result.subject.position_scope_label %}<p class="source-line">Portée : {{ result.subject.position_scope_label }}</p>{% endif %}
+    {% else %}<p class="comparison-hero__summary">{{ result.subject.plain_summary|default:"Résumé en langage clair à compléter." }}</p>{% if result.subject.concrete_effect %}<p class="effect-line"><strong>Effet concret :</strong> {{ result.subject.concrete_effect }}</p>{% endif %}{% endif %}
+  </div>
+  <div class="comparison-hero__meta"><span class="status-pill">{% if pagination %}{{ pagination.returned }} / {{ pagination.total }}{% else %}{{ result.rows|length }}{% endif %} relation{{ result.rows|length|pluralize }}</span>{% if result.scan_complete %}<span class="status-pill status-pill--ok">Parcours local complet</span>{% else %}<span class="status-pill status-pill--warning">Parcours tronqué</span>{% endif %}{% if result.coverage_stats.stale_relations %}<span class="status-pill status-pill--warning">{{ result.coverage_stats.stale_relations }} empreinte{{ result.coverage_stats.stale_relations|pluralize }} périmée{{ result.coverage_stats.stale_relations|pluralize }}</span>{% endif %}</div>
+</section>
+
+<form method="get" class="explorer-filters explorer-filters--inline" aria-label="Filtres de lecture">
+  <input type="hidden" name="mode" value="{{ mode }}">
+  {% if mode == "speech" and request.GET.declaration %}<input type="hidden" name="declaration" value="{{ request.GET.declaration }}">{% endif %}
+  {% if mode == "law" and request.GET.measure %}<input type="hidden" name="measure" value="{{ request.GET.measure }}">{% endif %}
+  <label for="result-institution">Institution
+    <input id="result-institution" name="institution" value="{{ institution }}" maxlength="120">
+  </label>
+  <label for="result-legislature">Législature
+    <input id="result-legislature" name="legislature" value="{{ legislature }}" maxlength="40">
+  </label>
+  <label for="result-nominative">Nature nominative
+    <select id="result-nominative" name="nominative">
+      <option value="">Toutes</option>
+      <option value="available"{% if nominative == "available" %} selected{% endif %}>Nominatif disponible</option>
+      <option value="partial"{% if nominative == "partial" %} selected{% endif %}>Nominatif partiel</option>
+      <option value="not_available"{% if nominative == "not_available" %} selected{% endif %}>Non nominatif</option>
+    </select>
+  </label>
+  <label for="result-conclusion">Conclusion
+    <select id="result-conclusion" name="conclusion">
+      <option value="">Toutes</option>
+      <option value="convergence"{% if conclusion == "convergence" %} selected{% endif %}>Convergence</option>
+      <option value="tension"{% if conclusion == "tension" %} selected{% endif %}>Tension</option>
+      <option value="not_comparable"{% if conclusion == "not_comparable" %} selected{% endif %}>Non comparable</option>
+      <option value="inconclusive"{% if conclusion == "inconclusive" %} selected{% endif %}>Non concluant</option>
+    </select>
+  </label>
+  <label for="result-from">Du
+    <input id="result-from" type="date" name="from" value="{{ date_from }}">
+  </label>
+  <label for="result-to">Au
+    <input id="result-to" type="date" name="to" value="{{ date_to }}">
+  </label>
+  <button type="submit">Filtrer la lecture</button>
+</form>
+<p class="scope-note">Filtres de couverture : institution, législature, nature nominative, lecture et période. Ils restreignent l’affichage ; ils ne créent aucune relation.</p>
+{% if result.coverage_stats.relation_exclusions %}
+<details class="exclusions-panel" open>
+  <summary>Exclusions de relations ({{ result.coverage_stats.relation_exclusions|length }})</summary>
+  <ul>
+    {% for item in result.coverage_stats.relation_exclusions %}
+    <li>{{ item.kind }} · {{ item.reason }}{% if item.revision %} · révision {{ item.revision }}{% endif %}</li>
+    {% endfor %}
+  </ul>
+</details>
+{% endif %}
+
+{% for row in result.rows %}
+<article class="comparison-card">
+  <header class="comparison-card__header">
+    <div>
+      <span class="source-chip">{{ row.declaration.source.medium_label }}</span>
+      {% if row.declaration.position_scope_label %}<span class="source-chip">{{ row.declaration.position_scope_label }}</span>{% endif %}
+      <h2>{{ row.declaration.speaker }}</h2>
+      <p>{{ row.declaration.capacity }}</p>
+      {% if row.actors %}<p class="actor-line">Orateur : {{ row.actors.speaker.label }}{% if row.actors.represented_entity %} · Entité représentée : {{ row.actors.represented_entity.name }}{% endif %} · Acteur comparé : {{ row.actors.compared_actor.label|default:"non déterminé" }}</p>{% endif %}
+    </div>
+    <span class="conclusion conclusion--{{ row.conclusion.code }}">{{ row.conclusion.label }}</span>
+  </header>
+  <section class="reading-short">
+    <p class="step-number">Lecture courte</p>
+    <p><strong>{{ row.conclusion.label }}.</strong> {{ row.conclusion.explanation }}</p>
+    <p class="chronology"><strong>{{ row.chronology.label }}.</strong> {{ row.chronology.caveat }}</p>
+  </section>
+  <div class="comparison-grid">
+    <section class="comparison-step comparison-step--speech">
+      <p class="step-number">01 · Parole publique</p><h3>Ce qui est affirmé</h3><blockquote>{{ row.declaration.quote }}</blockquote>
+      <details><summary>Preuves et source</summary>
+        <p class="source-line">{{ row.declaration.source.producer }} · {{ row.declaration.source.source_role_label }} · {{ row.declaration.source.locator }}</p>
+        <p class="source-line">Empreinte relation : {{ row.declaration.content_fingerprint|slice:":12" }}…</p>
+        <a href="{{ row.declaration.source.url }}" target="_blank" rel="noopener noreferrer">Ouvrir la source de la déclaration ↗</a>
+      </details>
+    </section>
+    <section class="comparison-step comparison-step--measure">
+      <p class="step-number">02 · Mesure qualifiée</p><h3>{{ row.measure.title }}</h3>
+      <p>{{ row.measure.plain_summary|default:"Résumé en langage clair à compléter avant diffusion." }}</p>
+      <p class="effect-line"><strong>Ce que cela change :</strong> {{ row.measure.concrete_effect|default:row.measure.mechanism|default:"Effet concret à qualifier." }}</p>
+      <span class="status-pill">{{ row.measure.position_label }}</span>
+      <details><summary>Justification et texte officiel</summary>
+        <p class="source-line">{{ row.measure.position_rationale }}</p>
+        <a href="{{ row.measure.official_text_url }}" target="_blank" rel="noopener noreferrer">Lire la version officielle du texte ↗</a>
+      </details>
+    </section>
+    <section class="comparison-step comparison-step--vote">
+      <p class="step-number">03 · Scrutin officiel</p><h3>{{ row.scrutiny.title }}</h3>
+      <p>{{ row.scrutiny.institution }} · {{ row.scrutiny.occurred_on|date:"j F Y" }}</p>
+      <span class="status-pill">{{ row.scrutiny.vote_effect_label }}</span>
+      <details><summary>Effet procédural et page officielle</summary>
+        <p class="source-line">{{ row.scrutiny.vote_effect_rationale }}</p>
+        <p class="source-line">Statut nominatif : {{ row.scrutiny.nominative_status }}</p>
+        <a href="{{ row.scrutiny.official_vote_url }}" target="_blank" rel="noopener noreferrer">Vérifier le scrutin officiel ↗</a>
+      </details>
+    </section>
+    <section class="comparison-step comparison-step--result">
+      <p class="step-number">04 · Lecture permise</p><h3>{{ row.vote.label }}</h3>
+      <p><strong>{{ row.conclusion.label }}.</strong> {{ row.conclusion.explanation }}</p>
+      <p class="chronology"><strong>{{ row.chronology.label }}.</strong> {{ row.chronology.caveat }}</p>
+      {% if row.vote.exclusions %}
+      <details open><summary>Exclusions de preuve ({{ row.vote.exclusions|length }})</summary>
+        <ul>{% for item in row.vote.exclusions %}<li>{{ item.reason }}{% if item.version_id %} · {{ item.version_id }}{% endif %}{% if item.nominative_status %} · {{ item.nominative_status }}{% endif %}</li>{% endfor %}</ul>
+      </details>
+      {% endif %}
+      {% if row.collective %}<p class="source-line">{{ row.collective.reserve }} Affiliations datées : {{ row.collective.affiliations }} · observations utilisables : {{ row.collective.usable_observations }}.</p>{% endif %}
+    </section>
+  </div>
+  <details class="proofs-panel" open>
+    <summary>Preuves distinctes — citation, texte/version, scrutin</summary>
+    <ol class="proof-list">
+      <li><strong>Citation / passage</strong> — empreinte {{ row.declaration.content_fingerprint|slice:":12" }}… · révision {{ row.declaration.revision }} · <a href="{{ row.proofs.citation.url }}" target="_blank" rel="noopener noreferrer">source de la déclaration ↗</a></li>
+      <li><strong>Texte / version officielle</strong> — {{ row.proofs.text_version.relation }} · <a href="{{ row.proofs.text_version.url }}" target="_blank" rel="noopener noreferrer">version officielle du texte ↗</a></li>
+      <li><strong>Scrutin officiel</strong> — {{ row.proofs.scrutiny.nominative_status }} · empreinte {{ row.scrutiny.content_fingerprint|slice:":12" }}… · <a href="{{ row.proofs.scrutiny.url }}" target="_blank" rel="noopener noreferrer">Vérifier le scrutin officiel ↗</a></li>
+    </ol>
+    <p class="scope-note">Une synthèse dépend de ces trois preuves et de leurs empreintes. Un changement substantiel invalide la qualification courante jusqu’à une nouvelle révision explicite. Le site destinataire ne réinterprète pas cette conclusion.</p>
+  </details>
+</article>
+{% empty %}
+<section class="empty-state"><span aria-hidden="true">◇</span><h2>Aucune chaîne complète qualifiée</h2><p>Des déclarations, mesures ou scrutins peuvent exister séparément. L’atelier refuse de les rapprocher tant que leurs relations et leurs preuves exactes ne sont pas qualifiées, ou si l’empreinte de contenu ne correspond plus à la matière examinée.</p><a href="{% url 'documentary_search' %}">Préparer les pièces manquantes</a></section>
+{% endfor %}
+
+{% if pagination and pagination.has_more or pagination.previous_offset != None %}
+<nav class="pager" aria-label="Pagination des relations">
+  {% if pagination.previous_offset != None %}<a href="?mode={{ mode }}{% if request.GET.declaration %}&amp;declaration={{ request.GET.declaration }}{% endif %}{% if request.GET.measure %}&amp;measure={{ request.GET.measure }}{% endif %}&amp;institution={{ institution|urlencode }}&amp;legislature={{ legislature|urlencode }}&amp;nominative={{ nominative|urlencode }}&amp;conclusion={{ conclusion|urlencode }}&amp;from={{ date_from }}&amp;to={{ date_to }}&amp;limit={{ limit }}&amp;offset={{ pagination.previous_offset }}">Précédent</a>{% endif %}
+  <span>{{ pagination.returned }} sur {{ pagination.total }} · offset {{ pagination.offset }}</span>
+  {% if pagination.has_more %}<a href="?mode={{ mode }}{% if request.GET.declaration %}&amp;declaration={{ request.GET.declaration }}{% endif %}{% if request.GET.measure %}&amp;measure={{ request.GET.measure }}{% endif %}&amp;institution={{ institution|urlencode }}&amp;legislature={{ legislature|urlencode }}&amp;nominative={{ nominative|urlencode }}&amp;conclusion={{ conclusion|urlencode }}&amp;from={{ date_from }}&amp;to={{ date_to }}&amp;limit={{ limit }}&amp;offset={{ pagination.next_offset }}">Suivant</a>{% endif %}
+</nav>
+{% endif %}
+
+<p class="notice notice--info"><strong>Périmètre :</strong> {{ result.coverage }}{% if result.coverage_stats %} Dénominateur : {{ result.coverage_stats.denominator }}.{% endif %} Le calcul ne crée ni revue humaine, ni publication, et ne consulte aucun service externe. Une synthèse Site devra citer la même empreinte et la même révision ; elle ne peut pas réinterpréter la conclusion. Le site destinataire ne réinterprète pas cette conclusion.</p>
+{% endif %}
+
+<details class="method-note"><summary>Comment lire une « tension documentée » ?</summary><p>Elle indique uniquement que, sur une mesure et un scrutin précisément qualifiés, le sens du vote nominatif observé va à l’encontre du sens de la position publique. Une parole postérieure au vote n’est jamais présentée comme une promesse rompue. Une abstention, une absence ou une donnée manquante ne sont jamais transformées en vote contre.</p></details>
+{% endblock %}

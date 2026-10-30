@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Publications et incidents{% endblock %}
+{% block content %}
+<header class="page-header"><p class="eyebrow">Journal de sortie</p><h1>Publications et incidents</h1><p class="lede">Suivez les événements préparés, leurs tentatives et leurs échecs sans les confondre avec une publication effective.</p></header>
+<p class="notice notice--info">Cette file locale ne prouve ni réception par un site destinataire ni affichage public.</p>
+<div class="table-wrap"><table><thead><tr><th>Séquence</th><th>Dossier</th><th>Opération</th><th>Révision</th><th>État</th><th>Tentatives</th></tr></thead><tbody>
+{% for event in page %}<tr><td>{{ event.sequence }}</td><td>{{ event.dossier.stable_id }}</td><td>{{ event.get_operation_display }}</td><td>{{ event.content_revision }}</td><td>{{ event.get_state_display }}</td><td>{{ event.attempts }}</td></tr>{% empty %}<tr><td colspan="6">Aucun événement.</td></tr>{% endfor %}
+</tbody></table></div>{% include "atelier/_pagination.html" %}
+{% endblock %}

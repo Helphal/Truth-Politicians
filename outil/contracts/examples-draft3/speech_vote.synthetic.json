@@ -1,0 +1,62 @@
+{
+  "schema_version": "dv.content/0.4.0-draft.3",
+  "policy_version": "DV-PUB-3",
+  "record_id": "SYNTHETIC:speech_vote",
+  "record_revision": 1,
+  "content_kind": "speech_vote",
+  "data_scope": "synthetic",
+  "method_version": "DV-M0.1",
+  "source_versions": [
+    {
+      "source_id": "SYNTHETIC:SOURCE",
+      "version_id": "fixture-v1",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "public_url": "https://www.assemblee-nationale.fr/fixture-test-only"
+    }
+  ],
+  "public": {
+    "title": "Comparaison discours-vote",
+    "short_answer": "Proposition documentaire à revoir.",
+    "main_caveat": "Portée limitée à ce cas.",
+    "reasoning": "Les six critères sont explicités ci-dessous.",
+    "result": "inconclusive",
+    "declaration_quote": "Nous ne promettons pas une conclusion sans preuve.",
+    "declaration_date": "2024-01-30",
+    "declaration_date_state": "known",
+    "declaration_source_url": "https://www.assemblee-nationale.fr/dyn/16/comptes-rendus/exemple",
+    "official_text_url": "https://www.assemblee-nationale.fr/dyn/16/textes/l16b1983_projet-loi",
+    "official_vote_url": "https://www.assemblee-nationale.fr/dyn/16/scrutins/3289",
+    "scope": "Acteur et scrutin explicitement bornés.",
+    "counterevidence": [],
+    "coverage": {
+      "period_start": "2024-01-01",
+      "period_end": "2024-01-01",
+      "expected_state": "unknown",
+      "expected_count": null,
+      "retrieved_count": 1,
+      "normalized_count": 1,
+      "publishable_count": 1,
+      "exclusions": [
+        "lot de test borné"
+      ],
+      "statement": "Aucune exhaustivité revendiquée."
+    },
+    "method_explanation": {
+      "attribution": "Acteur identifié.",
+      "object": "Objet explicite.",
+      "scope": "Portée explicite.",
+      "chronology": "Chronologie vérifiée.",
+      "procedure": "Procédure vérifiée.",
+      "counterevidence": "Recherche documentée, résultat vide admis."
+    },
+    "themes": []
+  },
+  "authorization": {
+    "route": "human_reviewed",
+    "snapshot_digest": "c7f9d5658e690e6fa0b53ea4d6cd32d2f9602112e99273a9d9dc20bc76c0bae3",
+    "public_review": {
+      "nature": "revue_humaine",
+      "date": "2001-01-02"
+    }
+  }
+}
